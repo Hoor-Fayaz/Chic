@@ -1,0 +1,43 @@
+{
+  "name": "chic-backend",
+  "version": "1.0.0",
+  "description": "Backend API for Chic clothing eCommerce platform (Express + MongoDB).",
+  "main": "src/server.js",
+  "scripts": {
+    "dev": "nodemon src/server.js",
+    "start": "NODE_ENV=production node src/server.js",
+    "lint": "eslint .",
+    "test": "echo \"No tests yet\" && exit 0"
+  },
+  "keywords": [
+    "ecommerce",
+    "fashion",
+    "express",
+    "mongo"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "express-rate-limit": "^7.4.0",
+    "helmet": "^7.0.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.4.1",
+    "morgan": "^1.10.0",
+    "passport": "^0.7.0",
+    "passport-facebook": "^3.0.0",
+    "passport-google-oauth20": "^2.0.0",
+    "stripe": "^21.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^9.0.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-import": "^2.29.1",
+    "nodemon": "^3.1.0",
+    "prettier": "^3.2.5"
+  }
+}
