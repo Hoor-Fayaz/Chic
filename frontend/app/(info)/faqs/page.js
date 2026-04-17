@@ -10,8 +10,14 @@ export async function generateMetadata() {
 }
 
 export default async function FAQPage() {
-  const settingsRes = await fetchPublicSettings().catch(() => null);
-  const settings = settingsRes?.data;
+  let settings = null;
+  try {
+    const settingsRes = await fetchPublicSettings();
+    settings = settingsRes?.data;
+  } catch (err) {
+    console.error("❌ Failed to load FAQ page settings:", err.message);
+  }
+
   const contactPhone = settings?.contactPhone || "923141988998";
   
   // Format phone number for WhatsApp URL (remove non-digits)

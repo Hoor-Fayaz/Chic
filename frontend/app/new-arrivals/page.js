@@ -7,18 +7,26 @@ export const metadata = {
 };
 
 export default async function NewArrivalsPage({ searchParams }) {
-  const [productsRes, categoriesRes] = await Promise.all([
-    fetchProducts({
-      ...searchParams,
-      isNewArrival: "true",
-      limit: 50,
-    }),
-    fetchCategories(),
-  ]);
+  let products = [];
+  let total = 0;
+  let categories = [];
 
-  const products = productsRes.data?.items || [];
-  const total = productsRes.data?.total ?? products.length;
-  const categories = categoriesRes.data?.items || [];
+  try {
+    const [productsRes, categoriesRes] = await Promise.all([
+      fetchProducts({
+        ...searchParams,
+        isNewArrival: "true",
+        limit: 50,
+      }),
+      fetchCategories(),
+    ]);
+
+    products = productsRes.data?.items || [];
+    total = productsRes.data?.total ?? products.length;
+    categories = categoriesRes.data?.items || [];
+  } catch (err) {
+    console.error("❌ Failed to load New Arrivals page data:", err.message);
+  }
 
   return (
     <div className="bg-gray-50 min-h-screen">

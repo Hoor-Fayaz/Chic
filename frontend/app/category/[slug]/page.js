@@ -15,22 +15,28 @@ export async function generateMetadata({ params }) {
 export default async function CategoryPage({ params, searchParams }) {
   const slug = params.slug;
 
-  // Fetch categories first to resolve the slug → MongoDB _id
-  const categoriesRes = await fetchCategories();
-  const categories = categoriesRes.data?.categories || categoriesRes.data?.items || [];
-  const category = categories.find((c) => c.slug === slug) || null;
-
-  // Now fetch products filtered by the resolved category ID
+  let categories = [];
+  let category = null;
   let products = [];
   let total = 0;
   let availableFabrics = [];
 
-  if (category?._id) {
-    const queryParams = { ...searchParams, category: category._id };
-    const productsRes = await fetchProducts(queryParams);
-    products = productsRes.data?.items || [];
-    total = productsRes.data?.total ?? products.length;
-    availableFabrics = productsRes.data?.availableFabrics || [];
+  try {
+    // Fetch categories first to resolve the slug → MongoDB _id
+    const categoriesRes = await fetchCategories();
+    categories = categoriesRes.data?.categories || categoriesRes.data?.items || [];
+    category = categories.find((c) => c.slug === slug) || null;
+
+    // Now fetch products filtered by the resolved category ID
+    if (category?._id) {
+      const queryParams = { ...searchParams, category: category._id };
+      const productsRes = await fetchProducts(queryParams);
+      products = productsRes.data?.items || [];
+      total = productsRes.data?.total ?? products.length;
+      availableFabrics = productsRes.data?.availableFabrics || [];
+    }
+  } catch (err) {
+    console.error(`❌ Failed to load category data [${slug}]:`, err.message);
   }
 
   const categoryName = category?.name || slug.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());

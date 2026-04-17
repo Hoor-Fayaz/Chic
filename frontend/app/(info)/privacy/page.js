@@ -4,21 +4,34 @@ import { fetchPublicSettings } from "@/lib/api";
 import PageContent from "@/components/ui/PageContent";
 
 export async function generateMetadata() {
-  const res = await fetchPage("privacy");
-  const page = res?.data;
-  return {
-    title: `${page?.title || "Privacy Policy"} | Jannah Chic`,
-    description: page?.content?.substring(0, 160) || "Privacy policy and data protection charter for Jannah Chic customers.",
-  };
+  try {
+    const res = await fetchPage("privacy");
+    const page = res?.data;
+    return {
+      title: `${page?.title || "Privacy Policy"} | Jannah Chic`,
+      description: page?.content?.substring(0, 160) || "Privacy policy and data protection charter for Jannah Chic.",
+    };
+  } catch (e) {
+    return { title: "Privacy Policy | Jannah Chic" };
+  }
 }
 
 export default async function PrivacyPage() {
-  const [res, settingsRes] = await Promise.all([
-    fetchPage("privacy"),
-    fetchPublicSettings(),
-  ]);
-  const page = res?.data;
-  const privacyEmail = settingsRes?.data?.privacyEmail || 'privacy@jannahchic.com';
+  let page = null;
+  let settings = null;
+
+  try {
+    const [res, settingsRes] = await Promise.all([
+      fetchPage("privacy"),
+      fetchPublicSettings(),
+    ]);
+    page = res?.data;
+    settings = settingsRes?.data;
+  } catch (e) {
+    console.error("❌ Failed to load Privacy page data:", e.message);
+  }
+
+  const privacyEmail = settings?.privacyEmail || 'privacy@jannahchic.com';
 
   return (
     <div className="space-y-16 pb-20 max-w-2xl animate-in fade-in duration-1000">

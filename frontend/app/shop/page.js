@@ -13,15 +13,24 @@ export async function generateMetadata({ searchParams }) {
 export const dynamic = "force-dynamic";
 
 export default async function ShopPage({ searchParams }) {
-  const [productsRes, categoriesRes] = await Promise.all([
-    fetchProducts(searchParams),
-    fetchCategories(),
-  ]);
+  let products = [];
+  let total = 0;
+  let availableFabrics = [];
+  let categories = [];
 
-  const products = productsRes.data?.items || [];
-  const total = productsRes.data?.total ?? products.length;
-  const availableFabrics = productsRes.data?.availableFabrics || [];
-  const categories = categoriesRes.data?.items || [];
+  try {
+    const [productsRes, categoriesRes] = await Promise.all([
+      fetchProducts(searchParams),
+      fetchCategories(),
+    ]);
+
+    products = productsRes.data?.items || [];
+    total = productsRes.data?.total ?? products.length;
+    availableFabrics = productsRes.data?.availableFabrics || [];
+    categories = categoriesRes.data?.items || [];
+  } catch (err) {
+    console.error("❌ Failed to load Shop page data:", err.message);
+  }
 
   return (
     <div className="bg-gray-50 min-h-screen">

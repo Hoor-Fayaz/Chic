@@ -5,20 +5,33 @@ import PageContent from "@/components/ui/PageContent";
 import { ArrowRight } from "lucide-react";
 
 export async function generateMetadata() {
-  const res = await fetchPage("returns");
-  const page = res?.data;
-  return {
-    title: `${page?.title || "Refund Policy"} | Jannah Chic`,
-    description: page?.content?.substring(0, 160) || "Returns and exchanges policy for Jannah Chic.",
-  };
+  try {
+    const res = await fetchPage("returns");
+    const page = res?.data;
+    return {
+      title: `${page?.title || "Refund Policy"} | Jannah Chic`,
+      description: page?.content?.substring(0, 160) || "Returns and exchanges policy for Jannah Chic.",
+    };
+  } catch (e) {
+    return { title: "Refund Policy | Jannah Chic" };
+  }
 }
 
 export default async function ReturnsPage() {
-  const res = await fetchPage("returns");
-  const page = res?.data;
+  let page = null;
+  let settings = null;
 
-  const settingsRes = await fetchPublicSettings().catch(() => null);
-  const settings = settingsRes?.data;
+  try {
+    const [res, settingsRes] = await Promise.all([
+      fetchPage("returns"),
+      fetchPublicSettings(),
+    ]);
+    page = res?.data;
+    settings = settingsRes?.data;
+  } catch (e) {
+    console.error("❌ Failed to load Returns page data:", e.message);
+  }
+
   const contactPhone = settings?.contactPhone || "923141988998";
   const formattedPhone = contactPhone.replace(/\D/g, "");
 
