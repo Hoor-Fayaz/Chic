@@ -55,26 +55,18 @@ app.use(helmet({
 app.use(
   cors({
     origin: (origin, callback) => {
-      // Allow requests with no origin (like mobile apps or curl)
+      // Allow requests with no origin (like mobile apps/curl)
       if (!origin) return callback(null, true);
       
       const normalizedOrigin = origin.replace(/\/$/, "");
       const frontendUrl = (process.env.FRONTEND_URL || "").replace(/\/$/, "");
 
-      const allowedOrigins = [
-        frontendUrl,
-        'http://localhost:3000',
-        'http://127.0.0.1:3000',
-        // Allow all Vercel previews for easier testing
-        /\.vercel\.app$/ 
-      ].filter(Boolean);
+      // Very permissive for Vercel environments to prevent blocking during launch
+      const isVercel = normalizedOrigin.endsWith('.vercel.app');
+      const isLocal = normalizedOrigin.includes('localhost') || normalizedOrigin.includes('127.0.0.1');
+      const isAllowed = normalizedOrigin === frontendUrl.replace(/\/$/, "");
 
-      const isAllowed = allowedOrigins.some(pattern => {
-        if (pattern instanceof RegExp) return pattern.test(normalizedOrigin);
-        return pattern === normalizedOrigin;
-      });
-
-      if (isAllowed || process.env.NODE_ENV !== 'production') {
+      if (isAllowed || isVercel || isLocal || process.env.NODE_ENV !== 'production') {
         callback(null, true);
       } else {
         console.warn(`CORS blocked for origin: ${origin}`);
