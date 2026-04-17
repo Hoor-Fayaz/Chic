@@ -18,6 +18,23 @@ require('./config/passport');
 
 const app = express();
 
+// Database connection middleware for Serverless compatibility
+let isConnected = false;
+app.use(async (req, res, next) => {
+  if (!isConnected) {
+    try {
+      await connectDB();
+      isConnected = true;
+      next();
+    } catch (error) {
+      console.error('Database connection error in serverless middleware:', error);
+      res.status(500).json({ success: false, message: 'Database connection failed' });
+    }
+  } else {
+    next();
+  }
+});
+
 // Security & common middlewares
 app.use(helmet({
   contentSecurityPolicy: {
