@@ -3,56 +3,30 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { HiOutlineX } from "react-icons/hi";
-import { fetchCart, removeCartItem } from "@/lib/api";
 import { useCartStore } from "@/store/cartStore";
 import { useToastStore } from "@/store/toastStore";
 
 export default function CartPage() {
-  const [cart, setCart] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [isLoaded, setIsLoaded] = useState(false);
   const { showToast } = useToastStore();
+  const cartItems = useCartStore((state) => state.cart || []);
+  const removeItem = useCartStore((state) => state.removeItem);
 
   useEffect(() => {
-    loadCart();
+    setIsLoaded(true);
   }, []);
 
-  const loadCart = async () => {
+  const handleRemove = (index) => {
     try {
-      const res = await fetchCart();
-      if (res.success && res.data && res.data.cart) {
-        setCart(res.data.cart);
-        useCartStore.getState().setCart(res.data.cart.items);
-      } else {
-        setCart(null);
-        useCartStore.getState().setCart([]);
-      }
-    } catch {
-      setCart(null);
-      useCartStore.getState().setCart([]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleRemove = async (index) => {
-    try {
-      const res = await removeCartItem(index);
-      if (res.success && res.data && res.data.cart) {
-        setCart(res.data.cart);
-        useCartStore.getState().setCart(res.data.cart.items);
-        showToast("Item removed from bag", "info");
-      } else {
-        // If data.cart isn't returned, reload manually
-        loadCart();
-        showToast("Item removed from bag", "info");
-      }
+      removeItem(index);
+      showToast("Item removed from bag", "info");
     } catch (err) {
       console.error("Remove item failed", err);
       showToast("Failed to remove item", "error");
     }
   };
 
-  if (loading) {
+  if (!isLoaded) {
     return (
       <div className="bg-gray-50 min-h-screen flex justify-center items-center">
         <p className="text-gray-500">Loading your cart...</p>
@@ -60,11 +34,40 @@ export default function CartPage() {
     );
   }
 
-  const items = cart?.items || [];
+  const items = cartItems;
   const subtotal = items.reduce(
-    (sum, item) => sum + item.price * item.quantity,
+    (sum, item) => sum + (item.price || item.product?.price || 0) * item.quantity,
     0
   );
+
+  const handleWhatsAppCheckout = () => {
+    const phoneNumber = "923141988998";
+    const currentOrigin = 'https://jannahchic.com';
+    
+    let message = `🛍️ *JANNAH CHIC - NEW ORDER INQUIRY*\n\n`;
+    message += `Hello team, I would like to place an order for the following items:\n\n`;
+    message += `📋 *ORDER DETAILS*\n`;
+    message += `------------------------------\n`;
+    
+    items.forEach((item, idx) => {
+      const product = item.product;
+      const productUrl = `${currentOrigin}/product/${product?.slug}`;
+      
+      message += `*Item ${idx + 1}:* ${product?.name}\n`;
+      message += `*Quantity:* ${item.quantity}\n`;
+      if (item.size) message += `*Size:* ${item.size}\n`;
+      if (item.color) message += `*Color:* ${item.color}\n`;
+      message += `*Price:* PKR ${(item.price * item.quantity).toLocaleString()}\n`;
+      message += `*Article Link:*\n${productUrl}\n\n`;
+    });
+    
+    message += `------------------------------\n`;
+    message += `💰 *Subtotal: PKR ${subtotal.toLocaleString()}*\n\n`;
+    message += `Please confirm the payment and delivery details! Thank you. ✨`;
+    
+    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank');
+  };
 
   return (
     <div className="bg-gray-50">
@@ -162,19 +165,20 @@ export default function CartPage() {
                 </div>
                 <div className="flex justify-between text-gray-500">
                   <span>Shipping</span>
-                  <span>Calculated at checkout</span>
+                  <span>To be discussed on WhatsApp</span>
                 </div>
               </div>
               <div className="flex justify-between border-t border-gray-100 pt-4 text-sm font-bold text-gray-900">
                 <span className="uppercase tracking-widest text-[10px]">Total</span>
                 <span>PKR {subtotal.toLocaleString()}</span>
               </div>
-              <Link
-                href="/checkout"
-                className="mt-6 inline-flex w-full justify-center rounded-full bg-black py-4 text-[11px] font-bold uppercase tracking-[0.2em] text-white hover:bg-gray-900 transition-all shadow-xl shadow-black/5 hover:-translate-y-0.5 active:translate-y-0"
+              <button
+                onClick={handleWhatsAppCheckout}
+                className="mt-6 flex w-full items-center justify-center gap-2 rounded-full bg-black py-4 text-[11px] font-bold uppercase tracking-[0.2em] text-white hover:bg-gray-900 transition-all shadow-xl shadow-black/5 hover:-translate-y-0.5 active:translate-y-0"
               >
-                Proceed to Shipping
-              </Link>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+                Complete Order via WhatsApp
+              </button>
 
             </aside>
           </div>

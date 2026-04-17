@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { createProduct, fetchCategories } from '@/lib/api';
+import { createProduct, fetchCategories, uploadImageAPI } from '@/lib/api';
+import { UploadCloud, Loader2 } from 'lucide-react';
 
 export default function NewProductPage() {
     const [form, setForm] = useState({
@@ -16,6 +17,7 @@ export default function NewProductPage() {
         isFeatured: false,
         stock: '',
         category: '',
+        unstitchedType: '',
         slug: '',
         sku: '',
         fabric: '',
@@ -30,8 +32,8 @@ export default function NewProductPage() {
 
     const [newSize, setNewSize] = useState('');
     const [newColor, setNewColor] = useState('');
-
-
+    const [uploadingImages, setUploadingImages] = useState(false);
+    const [uploadingSizeChart, setUploadingSizeChart] = useState(false);
 
     const [loading, setLoading] = useState(false);
     const [categories, setCategories] = useState([]);
@@ -67,17 +69,65 @@ export default function NewProductPage() {
         setForm(updated);
     };
 
-    const handleImageChange = (index, field, value) => {
-        const newImages = [...form.images];
-        newImages[index][field] = value;
-        setForm({ ...form, images: newImages });
+    const handleFileUpload = async (e) => {
+        const files = Array.from(e.target.files);
+        if (files.length === 0) return;
+
+        setUploadingImages(true);
+        try {
+            const formData = new FormData();
+            files.forEach(file => formData.append('images', file));
+
+            const res = await uploadImageAPI(formData);
+            if (res.success && res.data.urls) {
+                const newImageObjects = res.data.urls.map(url => ({
+                    url,
+                    alt: '',
+                    isPrimary: false
+                }));
+
+                const existingValidImgs = form.images.filter((img) => img.url);
+                if (existingValidImgs.length === 0 && newImageObjects.length > 0) {
+                    newImageObjects[0].isPrimary = true;
+                }
+
+                setForm({
+                    ...form,
+                    images: [...existingValidImgs, ...newImageObjects],
+                });
+            }
+        } catch (error) {
+            console.error('Failed to upload images', error);
+            alert('Failed to upload images. Check console or backend logs.');
+        } finally {
+            setUploadingImages(false);
+            e.target.value = null;
+        }
     };
 
-    const addImageField = () => {
-        setForm({
-            ...form,
-            images: [...form.images, { url: '', alt: '', isPrimary: false }],
-        });
+    const handleSizeChartUpload = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        setUploadingSizeChart(true);
+        try {
+            const formData = new FormData();
+            formData.append('images', file); // Use 'images' key as expected by backend upload endpoint
+
+            const res = await uploadImageAPI(formData);
+            if (res.success && res.data.urls && res.data.urls.length > 0) {
+                setForm({
+                    ...form,
+                    sizeChart: res.data.urls[0],
+                });
+            }
+        } catch (error) {
+            console.error('Failed to upload size chart', error);
+            alert('Failed to upload size chart. Please try again.');
+        } finally {
+            setUploadingSizeChart(false);
+            if (e.target) e.target.value = null;
+        }
     };
 
     const removeImageField = (index) => {
@@ -140,6 +190,8 @@ export default function NewProductPage() {
         setLoading(true);
 
         try {
+            const finalTags = form.unstitchedType ? [form.unstitchedType] : [];
+            
             const payload = {
                 ...form,
                 slug: form.slug || slugify(form.name),
@@ -148,6 +200,7 @@ export default function NewProductPage() {
                 discountPercent: form.discountPercent ? Number(form.discountPercent) : undefined,
                 stock: Number(form.stock),
                 images: form.images.filter((img) => img.url), // remove empty images
+                tags: finalTags,
             };
 
             // Strip empty optional string fields so MongoDB doesn't treat '' as a real value
@@ -289,21 +342,43 @@ export default function NewProductPage() {
                         </label>
                     </div>
 
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2 font-display uppercase tracking-wider text-[11px]">Category</label>
-                        <select
-                            name="category"
-                            value={form.category}
-                            onChange={handleChange}
-                            className="w-full border border-gray-100 bg-gray-50/50 px-4 py-3 rounded-xl focus:ring-2 focus:ring-black outline-none transition"
-                        >
-                            <option value="">Select Category</option>
-                            {categories.map((c) => (
-                                <option key={c._id} value={c.name}>
-                                    {c.name}
-                                </option>
-                            ))}
-                        </select>
+                    <div className="grid grid-cols-1 gap-4 border border-gray-100 bg-gray-50/50 p-4 rounded-xl">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2 font-display uppercase tracking-wider text-[11px]">Category</label>
+                            <select
+                                name="category"
+                                value={form.category}
+                                onChange={handleChange}
+                                className="w-full border border-gray-100 bg-white px-4 py-3 rounded-xl focus:ring-2 focus:ring-black outline-none transition"
+                            >
+                                <option value="">Select Category</option>
+                                {categories.map((c) => (
+                                    <option key={c._id} value={c._id}>
+                                        {c.name}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
+                        {categories.find(c => c._id === form.category)?.name?.toLowerCase().includes('unstitched') && (
+                            <div className="pt-2 border-t border-gray-200 mt-2">
+                                <label className="block text-sm font-bold text-gray-900 mb-3 font-display uppercase tracking-wider text-[11px]">Unstitched Type</label>
+                                <div className="flex gap-6">
+                                    <label className="flex items-center gap-2 cursor-pointer">
+                                        <input type="radio" name="unstitchedType" value="" checked={form.unstitchedType === ''} onChange={handleChange} className="w-4 h-4 text-black focus:ring-black" />
+                                        <span className="text-sm font-medium">Standard</span>
+                                    </label>
+                                    <label className="flex items-center gap-2 cursor-pointer">
+                                        <input type="radio" name="unstitchedType" value="2 piece" checked={form.unstitchedType === '2 piece'} onChange={handleChange} className="w-4 h-4 text-black focus:ring-black" />
+                                        <span className="text-sm font-medium">2 Piece</span>
+                                    </label>
+                                    <label className="flex items-center gap-2 cursor-pointer">
+                                        <input type="radio" name="unstitchedType" value="3 piece" checked={form.unstitchedType === '3 piece'} onChange={handleChange} className="w-4 h-4 text-black focus:ring-black" />
+                                        <span className="text-sm font-medium">3 Piece</span>
+                                    </label>
+                                </div>
+                            </div>
+                        )}
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
@@ -353,14 +428,48 @@ export default function NewProductPage() {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2 font-display uppercase tracking-wider text-[11px]">Size Chart Image URL</label>
-                        <input
-                            name="sizeChart"
-                            value={form.sizeChart}
-                            onChange={handleChange}
-                            className="w-full border border-gray-100 bg-gray-50/50 px-4 py-3 rounded-xl focus:ring-2 focus:ring-black outline-none transition"
-                            placeholder="https://..."
-                        />
+                        <label className="block text-sm font-medium text-gray-700 mb-2 font-display uppercase tracking-wider text-[11px]">Size Chart Image</label>
+                        <div className="space-y-4">
+                            {form.sizeChart ? (
+                                <div className="relative group w-full aspect-[4/3] rounded-2xl overflow-hidden border border-gray-100 bg-gray-50 shadow-sm">
+                                    <img 
+                                        src={form.sizeChart} 
+                                        alt="Size Chart" 
+                                        className="w-full h-full object-contain" 
+                                    />
+                                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center gap-4">
+                                        <button 
+                                            type="button"
+                                            onClick={() => setForm({ ...form, sizeChart: '' })}
+                                            className="bg-white text-red-600 px-4 py-2 rounded-xl text-xs font-bold hover:bg-red-50 transition"
+                                        >
+                                            Remove Chart
+                                        </button>
+                                    </div>
+                                </div>
+                            ) : (
+                                <label className={`flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-2xl cursor-pointer transition-colors ${uploadingSizeChart ? 'bg-gray-50 border-gray-200' : 'bg-gray-50 border-gray-300 hover:bg-gray-100'}`}>
+                                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                                        {uploadingSizeChart ? (
+                                            <Loader2 size={20} className="animate-spin text-gray-400 mb-2" />
+                                        ) : (
+                                            <UploadCloud size={20} className="text-gray-400 mb-2" />
+                                        )}
+                                        <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest leading-none">
+                                            {uploadingSizeChart ? 'Uploading chart...' : 'Upload Single Size Chart'}
+                                        </p>
+                                    </div>
+                                    <input 
+                                        type="file" 
+                                        accept="image/*" 
+                                        className="hidden" 
+                                        onChange={handleSizeChartUpload}
+                                        disabled={uploadingSizeChart}
+                                    />
+                                </label>
+                            )}
+                            <p className="text-[10px] text-gray-400 italic">If no custom chart is uploaded, the default boutique guide will be displayed.</p>
+                        </div>
                     </div>
 
                     {/* Size Selector */}
@@ -424,56 +533,61 @@ export default function NewProductPage() {
                 {/* Right Column: Images */}
                 <div className="space-y-6">
                     <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-                        <div className="flex justify-between items-center mb-4">
-                            <label className="text-sm font-medium text-gray-700">Product Images</label>
-                            <button
-                                type="button"
-                                onClick={addImageField}
-                                className="text-xs bg-black text-white px-3 py-1.5 rounded-full hover:bg-gray-800 transition"
-                            >
-                                + Add Image
-                            </button>
+                        <div className="mb-6">
+                            <label className="block text-sm font-medium text-gray-700 mb-2">Upload Product Images</label>
+                            <label className={`flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-xl cursor-pointer transition-colors ${uploadingImages ? 'bg-gray-50 border-gray-200' : 'bg-gray-50 border-gray-300 hover:bg-gray-100 hover:border-gray-400'}`}>
+                                <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                                    {uploadingImages ? (
+                                        <Loader2 size={24} className="animate-spin text-gray-400 mb-2" />
+                                    ) : (
+                                        <UploadCloud size={24} className="text-gray-400 mb-2" />
+                                    )}
+                                    <p className="text-xs text-gray-500 font-medium">
+                                        {uploadingImages ? 'Uploading files securely...' : 'Click to select JPG, PNG, WEBP files'}
+                                    </p>
+                                </div>
+                                <input 
+                                    type="file" 
+                                    multiple 
+                                    accept="image/png, image/jpeg, image/webp" 
+                                    className="hidden" 
+                                    onChange={handleFileUpload}
+                                    disabled={uploadingImages}
+                                />
+                            </label>
                         </div>
 
                         <div className="space-y-4">
-                            {form.images.map((img, index) => (
-                                <div key={index} className="p-4 border border-gray-100 rounded-xl space-y-3 relative group">
-                                    <div className="flex items-center gap-3">
-                                        <input
-                                            value={img.url}
-                                            onChange={(e) => handleImageChange(index, 'url', e.target.value)}
-                                            className="flex-1 border border-gray-200 px-3 py-1.5 rounded-lg text-xs outline-none focus:border-black"
-                                            placeholder="Image URL"
-                                            required
-                                        />
+                            {form.images.filter(img => img.url).length === 0 ? (
+                                <p className="text-xs text-gray-400 italic text-center py-4">No images uploaded yet.</p>
+                            ) : form.images.filter(img => img.url).map((img, index) => (
+                                <div key={index} className="p-4 border border-gray-100 rounded-xl space-y-3 relative group bg-white">
+                                    <div className="flex items-center gap-4">
+                                        <div className="h-16 w-16 rounded-lg overflow-hidden border border-gray-100 shrink-0 bg-gray-50">
+                                            <img src={img.url} alt="Preview" className="w-full h-full object-cover" />
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <p className="text-[10px] text-gray-400 truncate mb-2" title={img.url}>{img.url.split('/').pop()}</p>
+                                            <label className="flex items-center gap-2 cursor-pointer w-fit">
+                                                <input
+                                                    type="radio"
+                                                    checked={img.isPrimary}
+                                                    onChange={() => setPrimaryImage(index)}
+                                                    className="w-3 h-3 accent-black"
+                                                />
+                                                <span className="text-[10px] uppercase tracking-wider text-gray-900 font-bold">Primary Image</span>
+                                            </label>
+                                        </div>
                                         <button
                                             type="button"
                                             onClick={() => removeImageField(index)}
-                                            className="text-red-500 hover:bg-red-50 p-1.5 rounded-lg transition"
+                                            className="text-red-500 hover:bg-red-50 p-2 rounded-lg transition shrink-0"
                                             title="Remove image"
                                         >
                                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
                                             </svg>
                                         </button>
-                                    </div>
-
-                                    <div className="flex items-center gap-4">
-                                        <label className="flex items-center gap-2 cursor-pointer">
-                                            <input
-                                                type="radio"
-                                                checked={img.isPrimary}
-                                                onChange={() => setPrimaryImage(index)}
-                                                className="w-3 h-3 accent-black"
-                                            />
-                                            <span className="text-[10px] uppercase tracking-wider text-gray-500 font-semibold">Primary Image</span>
-                                        </label>
-                                        
-                                        {img.url && (
-                                            <div className="h-10 w-10 rounded-lg overflow-hidden border border-gray-100 ml-auto">
-                                                <img src={img.url} alt="Preview" className="w-full h-full object-cover" />
-                                            </div>
-                                        )}
                                     </div>
                                 </div>
                             ))}
@@ -491,4 +605,4 @@ export default function NewProductPage() {
             </form>
         </div>
     );
-}
+}

@@ -23,7 +23,7 @@ export async function apiFetch(path, options = {}) {
       method: options.method || "GET",
       headers,
       body: options.body ? JSON.stringify(options.body) : undefined,
-      credentials: "include",
+      credentials: typeof window !== "undefined" ? "include" : undefined,
       cache: "no-store",
     });
 
@@ -39,6 +39,12 @@ export async function apiFetch(path, options = {}) {
     return await res.json(); // ✅ full response as before
   } catch (err) {
     console.error("API Fetch Error:", err);
+    
+    // Improved user-facing error message for connection failures
+    if (err.name === "TypeError" && err.message === "Failed to fetch") {
+      throw new Error(`Unable to connect to the backend server at ${url}. Please ensure the backend is running and reachable from the browser.`);
+    }
+    
     throw err;
   }
 }
@@ -127,10 +133,18 @@ export async function fetchProductBySlug(slug) {
     cache: "no-store",
   });
 
-  if (!res.ok) return null;
+  if (!res.ok) {
+    if (res.status === 404) return null;
+    let msg = `Request failed with status ${res.status}`;
+    try {
+      const body = await res.json();
+      msg = body.message || msg;
+    } catch {}
+    throw new Error(msg);
+  }
 
   const data = await res.json();
-  return data.data.product; // ✅ FIXED
+  return data.data.product;
 }
 
 /* ------------------------- Admin APIs ------------------------- */
@@ -171,6 +185,11 @@ export async function updateUserStatus(id, payload) {
     method: "PATCH",
     body: payload
   });
+}
+
+export async function fetchAdminReviews(params = {}) {
+  const searchParams = new URLSearchParams(params);
+  return apiFetch(`/admin/reviews?${searchParams.toString()}`);
 }
 
 export async function fetchPublicSettings() {
@@ -216,4 +235,48 @@ export async function createProductReview(productId, payload) {
 export async function deleteReviewAPI(reviewId) {
   return apiFetch(`/reviews/${reviewId}`, { method: "DELETE" });
 }
-
+
+/* ------------------------- Upload APIs ------------------------- */
+export async function uploadImageAPI(formData) {
+  const base = (API_BASE_URL || "").replace(/\/$/, "");
+  let token = null;
+  
+  // Securely get token on client side
+  if (typeof window !== "undefined") {
+    token = useAuthStore.getState().getToken?.();
+  }
+  
+  const headers = {};
+  if (token) headers["Authorization"] = `Bearer ${token}`;
+
+  // Do not use apiFetch because it forces application/json Content-Type
+  // fetch needs to auto-detect FormData to append the correct multipart boundary
+  const res = await fetch(`${base}/uploads`, {
+    method: "POST",
+    headers,
+    body: formData,
+  });
+
+  if (!res.ok) {
+    throw new Error("Image upload failed");
+  }
+  return await res.json();
+}
+
+export async function trackInquiry(payload) {
+  return apiFetch("/inquiries", { method: "POST", body: payload });
+}
+
+/* ------------------------- CMS Pages APIs ------------------------- */
+export async function fetchPage(slug) {
+  return apiFetch(`/pages/${slug}`);
+}
+
+export async function fetchAdminPages() {
+  return apiFetch("/pages");
+}
+
+export async function updatePage(slug, payload) {
+  return apiFetch(`/pages/${slug}`, { method: "PUT", body: payload });
+}
+

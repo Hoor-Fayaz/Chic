@@ -1,12 +1,14 @@
-import ProductGrid from "@/components/product/ProductGrid";
+import ProductListContainer from "@/components/product/ProductListContainer";
 import { fetchProducts, fetchCategories } from "@/lib/api";
 
 export async function generateMetadata({ params }) {
-  const titleSlug = params.slug.replace(/-/g, " ");
-  const title = titleSlug.charAt(0).toUpperCase() + titleSlug.slice(1);
+  const title = params.slug
+    .replace(/-/g, " ")
+    .replace(/\b\w/g, (l) => l.toUpperCase());
+    
   return {
     title: `${title} | Jannah Chic`,
-    description: `Shop our ${title} collection at Jannah Chic.`,
+    description: `Discover the curated ${title} collection at Jannah Chic.`,
   };
 }
 
@@ -19,41 +21,47 @@ export default async function CategoryPage({ params, searchParams }) {
   const category = categories.find((c) => c.slug === slug) || null;
 
   // Now fetch products filtered by the resolved category ID
-  const queryParams = { ...searchParams };
+  let products = [];
+  let total = 0;
+  let availableFabrics = [];
+
   if (category?._id) {
-    queryParams.category = category._id;
-  } else if (!category) {
-    // Slug not found — fetch zero products gracefully
-    queryParams.category = "none";
+    const queryParams = { ...searchParams, category: category._id };
+    const productsRes = await fetchProducts(queryParams);
+    products = productsRes.data?.items || [];
+    total = productsRes.data?.total ?? products.length;
+    availableFabrics = productsRes.data?.availableFabrics || [];
   }
 
-  const productsRes = await fetchProducts(queryParams);
-  const products = productsRes.data?.items || [];
-  const total = productsRes.data?.total ?? products.length;
+  const categoryName = category?.name || slug.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
 
   return (
     <div className="bg-gray-50 min-h-screen">
       <div className="mx-auto max-w-6xl px-4 py-10 lg:px-0">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-display tracking-tight text-gray-900">
-            {category?.name || slug.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase())}
-          </h1>
-          {category?.description && (
-            <p className="mt-2 text-sm text-gray-500">{category.description}</p>
-          )}
-          <p className="mt-1 text-xs text-gray-400">{total} item{total !== 1 ? "s" : ""}</p>
+        
+        {/* Header Section */}
+        <div className="mb-10 border-b border-gray-100 pb-8 flex flex-col md:flex-row md:items-end justify-between gap-6">
+          <div className="max-w-2xl">
+            <p className="text-[10px] uppercase tracking-[0.4em] text-gray-400 font-bold mb-3">
+              Collection
+            </p>
+            <h1 className="text-4xl md:text-5xl font-display tracking-tight text-gray-900 mb-3">
+              {categoryName}
+            </h1>
+            <p className="text-sm text-gray-500 leading-relaxed italic">
+              {category?.description || "Curated silhouettes for the discerning wardrobe."}
+            </p>
+          </div>
         </div>
 
-        {products.length > 0 ? (
-          <ProductGrid products={products} />
-        ) : (
-          <div className="flex flex-col items-center justify-center py-24 text-center">
-            <p className="text-lg font-display text-gray-400">No products found in this category.</p>
-            <p className="text-sm text-gray-400 mt-1">Check back soon — new arrivals are on their way.</p>
-          </div>
-        )}
+        <ProductListContainer 
+            products={products} 
+            total={total} 
+            categories={categories} 
+            availableFabrics={availableFabrics}
+        />
       </div>
     </div>
   );
 }
+

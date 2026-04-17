@@ -27,7 +27,7 @@ export default function AutoSwiper() {
     if (slides.length <= 1) return;
     const interval = setInterval(() => {
       setCurrent((prev) => (prev + 1) % slides.length);
-    }, 4000);
+    }, 2000);
 
     return () => clearInterval(interval);
   }, [slides.length]);
@@ -36,12 +36,12 @@ export default function AutoSwiper() {
 
   return (
     <section className="relative w-full overflow-hidden">
-      <div className="relative w-full h-[70vh] lg:h-[80vh] overflow-hidden">
+      <div className="relative w-full h-[75vh] lg:h-[95vh] overflow-hidden">
         {slides.map((slide, i) => (
           <Link
             key={i}
             href={slide.link}
-            className={`absolute inset-0 transition-opacity duration-1000 ${
+            className={`absolute inset-0 transition-opacity duration-700 ${
               i === current ? "opacity-100 z-10" : "opacity-0 z-0"
             }`}
           >
@@ -49,8 +49,8 @@ export default function AutoSwiper() {
               className="h-full w-full bg-cover bg-center"
               style={{ backgroundImage: `url(${slide.imageUrl})` }}
             >
-              <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
-                <h2 className="text-white text-3xl lg:text-5xl font-display font-bold tracking-tight uppercase">
+              <div className="absolute inset-0 bg-black/25 flex items-center justify-center">
+                <h2 className="px-6 text-white text-2xl sm:text-5xl lg:text-7xl font-display font-medium tracking-tight text-center drop-shadow-xl max-w-4xl">
                   {slide.title}
                 </h2>
               </div>

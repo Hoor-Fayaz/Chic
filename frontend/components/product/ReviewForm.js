@@ -5,7 +5,6 @@ import { Star } from "lucide-react";
 import { createProductReview } from "@/lib/api";
 import { useAuthStore } from "@/store/authStore";
 import { useToastStore } from "@/store/toastStore";
-import Link from "next/link";
 
 export default function ReviewForm({ productId, onReviewAdded }) {
   const { user } = useAuthStore();
@@ -13,35 +12,37 @@ export default function ReviewForm({ productId, onReviewAdded }) {
   const [hoverRating, setHoverRating] = useState(0);
   const [comment, setComment] = useState("");
   const [title, setTitle] = useState("");
+  const [guestName, setGuestName] = useState("");
+  const [guestEmail, setGuestEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const { showToast } = useToastStore();
-
-  if (!user) {
-    return (
-      <div className="bg-gray-50/50 p-8 rounded-[2rem] text-center border border-dashed border-gray-200">
-        <p className="text-gray-500 font-medium mb-4">Please log in to write a review</p>
-        <Link 
-            href="/auth/login" 
-            className="inline-block bg-black text-white px-8 py-3 rounded-full text-sm font-bold uppercase tracking-widest hover:bg-gray-800 transition shadow-sm"
-        >
-          Login
-        </Link>
-      </div>
-    );
-  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (rating === 0) return showToast("Please select a rating", "info");
-    
+
+    // Validate guest fields if not logged in
+    if (!user) {
+      if (!guestName.trim()) return showToast("Please enter your name", "info");
+      if (!guestEmail.trim()) return showToast("Please enter your email", "info");
+    }
+
     setLoading(true);
     try {
-      await createProductReview(productId, { rating, comment, title });
+      const payload = { rating, comment, title };
+      if (!user) {
+        payload.guestName = guestName;
+        payload.guestEmail = guestEmail;
+      }
+      await createProductReview(productId, payload);
+      const submittedRating = rating;
       showToast("Thank you for your review!", "success");
       setComment("");
       setTitle("");
       setRating(5);
-      if (onReviewAdded) onReviewAdded();
+      setGuestName("");
+      setGuestEmail("");
+      if (onReviewAdded) onReviewAdded(submittedRating);
     } catch (err) {
       showToast(err?.message || "Failed to submit review", "error");
     } finally {
@@ -51,9 +52,41 @@ export default function ReviewForm({ productId, onReviewAdded }) {
 
   return (
     <div className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm">
-      <h3 className="text-xl font-display font-bold mb-6 tracking-tight text-gray-900">Write a Review</h3>
-      
+      <h3 className="text-xl font-display font-bold mb-2 tracking-tight text-gray-900">Write a Review</h3>
+      <p className="text-[11px] text-gray-400 mb-6">
+        {user ? `Posting as ${user.name}` : "No account needed — just fill in your name and email."}
+      </p>
+
       <form onSubmit={handleSubmit} className="space-y-6">
+
+        {/* Guest fields — shown only when not logged in */}
+        {!user && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-[11px] font-bold uppercase tracking-widest text-gray-400 mb-2">Your Name *</label>
+              <input
+                type="text"
+                value={guestName}
+                onChange={(e) => setGuestName(e.target.value)}
+                required
+                className="w-full bg-gray-50 border border-transparent px-5 py-3.5 rounded-2xl focus:bg-white focus:border-black outline-none transition-all placeholder:text-gray-300 text-sm"
+                placeholder="e.g. Fatima A."
+              />
+            </div>
+            <div>
+              <label className="block text-[11px] font-bold uppercase tracking-widest text-gray-400 mb-2">Email Address *</label>
+              <input
+                type="email"
+                value={guestEmail}
+                onChange={(e) => setGuestEmail(e.target.value)}
+                required
+                className="w-full bg-gray-50 border border-transparent px-5 py-3.5 rounded-2xl focus:bg-white focus:border-black outline-none transition-all placeholder:text-gray-300 text-sm"
+                placeholder="your@email.com"
+              />
+            </div>
+          </div>
+        )}
+
         <div>
           <label className="block text-[11px] font-bold uppercase tracking-widest text-gray-400 mb-3">Rating</label>
           <div className="flex gap-1.5">

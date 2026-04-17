@@ -12,7 +12,10 @@ const wishlistRoutes = require('./wishlist.routes');
 const adminRoutes = require('./admin.routes');
 const reviewRoutes = require('./review.routes');
 const settingsRoutes = require('./settings.routes');
-
+const uploadRoutes = require('./uploadRoutes');
+const inquiryRoutes = require('./inquiry.routes');
+const pageRoutes = require('./page.routes');
+const contactRoutes = require('./contact.routes');
 
 router.use('/auth', authRoutes);
 router.use('/user', userRoutes);
@@ -24,6 +27,10 @@ router.use('/wishlist', wishlistRoutes);
 router.use('/admin', adminRoutes);
 router.use('/reviews', reviewRoutes);
 router.use('/settings', settingsRoutes);
+router.use('/uploads', uploadRoutes);
+router.use('/inquiries', inquiryRoutes);
+router.use('/pages', pageRoutes);
+router.use('/contacts', contactRoutes);
 
 
 module.exports = router;

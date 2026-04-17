@@ -27,7 +27,12 @@ export default function LoginForm() {
     try {
       const res = await loginUser(form);
       setAuth(res.data.user, res.data.token);
-      router.push("/"); // redirect after login
+      
+      if (res.data.user.role === "admin") {
+        router.push("/admin/dashboard");
+      } else {
+        router.push("/"); 
+      }
     } catch (err) {
       setError(err.message || "Login failed");
     } finally {

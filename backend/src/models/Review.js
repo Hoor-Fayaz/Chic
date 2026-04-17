@@ -11,8 +11,18 @@ const reviewSchema = new mongoose.Schema(
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
-      required: true,
+      required: false, // Optional — guests can also review
       index: true,
+    },
+    // Guest reviewer fields (used when user is not logged in)
+    guestName: {
+      type: String,
+      trim: true,
+    },
+    guestEmail: {
+      type: String,
+      trim: true,
+      lowercase: true,
     },
     rating: {
       type: Number,
@@ -37,7 +47,12 @@ const reviewSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-reviewSchema.index({ product: 1, user: 1 }, { unique: true });
+// Only enforce one review per user per product for logged-in users
+// Guests can submit multiple (limited by email check in service)
+reviewSchema.index(
+  { product: 1, user: 1 },
+  { unique: true, sparse: true } // sparse means nulls are ignored in uniqueness check
+);
 
 module.exports = mongoose.model('Review', reviewSchema);
 

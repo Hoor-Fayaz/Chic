@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { fetchPublicSettings } from "@/lib/api";
+import { CardGridSkeleton } from "../ui/Skeletons";
 
 export default function FeaturedCollections({ categories: apiCategories = [] }) {
   const [items, setItems] = useState([]);
@@ -29,11 +30,20 @@ export default function FeaturedCollections({ categories: apiCategories = [] }) 
     }).finally(() => setLoading(false));
   }, [apiCategories]);
 
-  if (!items.length && !loading) return null;
+  if (loading) return (
+    <section className="bg-white py-14">
+      <div className="mx-auto max-w-[1600px] px-4 lg:px-12">
+        <div className="mb-10 h-10 w-64 bg-gray-50 rounded-lg animate-pulse" />
+        <CardGridSkeleton count={3} />
+      </div>
+    </section>
+  );
+
+  if (!items.length) return null;
 
   return (
     <section className="bg-white py-14">
-      <div className="mx-auto max-w-6xl px-4 lg:px-0">
+      <div className="mx-auto max-w-[1600px] px-4 lg:px-12">
         <div className="mb-10 text-center md:text-left">
             <h2 className="text-3xl font-display font-bold tracking-tight text-gray-900">
             {title}
@@ -41,12 +51,12 @@ export default function FeaturedCollections({ categories: apiCategories = [] }) 
             <div className="h-1 w-12 bg-black mt-2 mx-auto md:mx-0 rounded-full" />
         </div>
 
-        <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3">
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4 sm:gap-6">
           {items.map((item, i) => (
             <Link
               key={item._id || i}
               href={`/category/${item.slug}`}
-              className="relative block overflow-hidden rounded-[3rem] aspect-[3/4] group shadow-sm hover:shadow-xl transition-all duration-500"
+              className="relative block overflow-hidden rounded-[1.5rem] sm:rounded-[3rem] aspect-[3/4] group shadow-sm hover:shadow-xl transition-all duration-500"
             >
               <img
                 src={item.imageUrl || item.image || "/products/placeholder.png"}

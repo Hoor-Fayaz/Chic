@@ -1,10 +1,14 @@
-import ProductGrid from "@/components/product/ProductGrid";
 import ProductFilters from "@/components/product/ProductFilters";
+import ProductListContainer from "@/components/product/ProductListContainer";
 import { fetchProducts, fetchCategories } from "@/lib/api";
+import { Suspense } from "react";
 
-export const metadata = {
-  title: "Shop | Chic",
-};
+export async function generateMetadata({ searchParams }) {
+  return {
+    title: `The Catalog | Jannah Chic`,
+    description: `Explore our premium collection at Jannah Chic. Discover architectural silhouettes and timeless textures.`,
+  };
+}
 
 export const dynamic = "force-dynamic";
 
@@ -15,26 +19,33 @@ export default async function ShopPage({ searchParams }) {
   ]);
 
   const products = productsRes.data?.items || [];
+  const total = productsRes.data?.total ?? products.length;
+  const availableFabrics = productsRes.data?.availableFabrics || [];
   const categories = categoriesRes.data?.items || [];
 
   return (
-    <div className="bg-gray-50">
+    <div className="bg-gray-50 min-h-screen">
       <div className="mx-auto max-w-6xl px-4 py-10 lg:px-0">
-        <div className="mb-6 flex items-baseline justify-between">
-          <h1 className="text-2xl font-display tracking-tight text-gray-900">
-            Shop
-          </h1>
-          <p className="text-xs text-gray-500">
-            {productsRes.total} items
-          </p>
+        
+        {/* Header Section */}
+        <div className="mb-10 border-b border-gray-100 pb-8 flex flex-col md:flex-row md:items-end justify-between gap-6">
+          <div className="max-w-2xl">
+            <p className="text-[10px] uppercase tracking-[0.4em] text-gray-400 font-bold mb-3">
+              The Catalog
+            </p>
+            <h1 className="text-4xl md:text-5xl font-display tracking-tight text-gray-900 mb-3">
+              Shop
+            </h1>
+            <p className="text-sm text-gray-500 leading-relaxed italic">
+              "Explore our complete range of architectural silhouettes and timeless textures."
+            </p>
+          </div>
         </div>
 
-        <div className="grid gap-8 md:grid-cols-[260px,1fr]">
-          <ProductFilters categories={categories} />
-          <ProductGrid products={products} />
+        <div className="w-full">
+          <ProductListContainer products={products} total={total} categories={categories} availableFabrics={availableFabrics} />
         </div>
       </div>
     </div>
   );
 }
-

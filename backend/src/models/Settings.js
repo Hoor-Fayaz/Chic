@@ -43,13 +43,25 @@ const settingsSchema = new mongoose.Schema({
     isActive: { type: Boolean, default: true }
   },
   footerAbout: { type: String },
-  contactEmail: { type: String },
+  // Global brand & contact settings
+  contactPhone: { type: String, default: '923141988998' },
+  contactEmail: { type: String, default: 'support@jannahchic.com' },
+  legalEmail: { type: String, default: 'legal@jannahchic.com' },
+  privacyEmail: { type: String, default: 'privacy@jannahchic.com' },
+  talentEmail: { type: String, default: 'talent@jannahchic.com' },
+  storeAddress: { type: String, default: 'DHA Phase 6, Pakistan' },
+  instagramUrl: { type: String, default: 'https://www.instagram.com/jannah_chic?igsh=MW56bG9lNzJudWRrMg==' },
   checkout: {
     shippingLimit: { type: Number, default: 5000 },
     shippingDefault: { type: Number, default: 250 },
     taxPercentage: { type: Number, default: 15 },
     fbrFee: { type: Number, default: 1 }
-  }
+  },
+  shippingRates: [{
+    region: { type: String, required: true },
+    courier: { type: String },
+    time: { type: String }
+  }],
 }, { timestamps: true });
 
 module.exports = mongoose.model('Settings', settingsSchema);

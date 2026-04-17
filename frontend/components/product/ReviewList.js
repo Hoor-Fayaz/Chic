@@ -47,11 +47,13 @@ export default function ReviewList({ productId, refreshKey }) {
       ) : (
         <div className="grid gap-10">
           {reviews.map((review) => (
-            <div key={review._id} className="group">
-              <div className="flex items-start justify-between gap-4 mb-3">
+            <div key={review._id} className="group overflow-hidden">
+              <div className="flex flex-wrap items-start justify-between gap-2 sm:gap-4 mb-3">
                 <div className="space-y-1">
                   <p className="font-bold text-gray-900 text-sm tracking-tight capitalize">
-                    {review.user?.firstName} {review.user?.lastName}
+                    {review.user
+                      ? `${review.user.firstName || ''} ${review.user.lastName || ''}`.trim()
+                      : review.guestName || 'Anonymous'}
                   </p>
                   <ReviewStars rating={review.rating} size={14} />
                 </div>
@@ -64,7 +66,7 @@ export default function ReviewList({ productId, refreshKey }) {
                 <h4 className="font-bold text-gray-800 text-sm mb-2">{review.title}</h4>
               )}
               
-              <p className="text-gray-600 text-[14px] leading-relaxed max-w-2xl">
+              <p className="text-gray-600 text-[14px] leading-relaxed max-w-2xl break-words">
                 {review.comment}
               </p>
             </div>

@@ -2,12 +2,13 @@ const Order = require('../models/Order');
 const Product = require('../models/Product');
 const User = require('../models/User');
 const Settings = require('../models/Settings');
+const Inquiry = require('../models/Inquiry');
 
 /**
  * Get aggregated statistics for the admin dashboard
  */
 async function getDashboardStats() {
-  const [totalRevenueResult, totalOrders, totalProducts, totalUsers, recentOrders] = await Promise.all([
+  const [totalRevenueResult, totalOrders, totalProducts, totalUsers, recentOrders, inquiryStats] = await Promise.all([
     // Total Revenue calculation
     Order.aggregate([
       { $match: { status: { $ne: 'cancelled' } } },
@@ -23,13 +24,31 @@ async function getDashboardStats() {
     Order.find()
       .populate('user', 'name email')
       .sort({ createdAt: -1 })
-      .limit(5)
+      .limit(5),
+    // WhatsApp Inquiry Stats
+    Inquiry.aggregate([
+        { $facet: {
+            total: [{ $count: "count" }],
+            potentialRevenue: [
+                { $match: { status: { $ne: 'closed' } } },
+                { $group: { _id: null, sum: { $sum: "$potentialRevenue" } } }
+            ],
+            recent: [
+                { $sort: { createdAt: -1 } },
+                { $limit: 10 },
+                { $lookup: { from: 'products', localField: 'product', foreignField: '_id', as: 'product' } },
+                { $unwind: { path: '$product', preserveNullAndEmptyArrays: true } }
+            ]
+        }}
+    ])
   ]);
 
   const totalRevenue = totalRevenueResult[0]?.total || 0;
+  const whatsappLeads = inquiryStats[0]?.total[0]?.count || 0;
+  const potentialRevenue = inquiryStats[0]?.potentialRevenue[0]?.sum || 0;
+  const recentInquiries = inquiryStats[0]?.recent || [];
 
   // Calculate monthly growth (optional, simplified for now)
-  // For a real boutique, we might want sales from last 30 days vs previous 30
   const thirtyDaysAgo = new Date();
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
   
@@ -43,8 +62,11 @@ async function getDashboardStats() {
     totalOrders,
     totalProducts,
     totalUsers,
+    whatsappLeads,
+    potentialRevenue,
     lastMonthRevenue: lastMonthSales[0]?.total || 0,
-    recentOrders
+    recentOrders,
+    recentInquiries
   };
 }
 

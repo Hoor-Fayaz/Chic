@@ -1,108 +1,103 @@
-// "use client";
-// import ProductCard from "../product/ProductCard";
-
-// export default function ProductCarousel({ title, products = [] }) {
-//   if (!products.length) return null;
-
-//   return (
-//     <section className="bg-white py-10">
-//       <div className="mx-auto max-w-6xl px-4 lg:px-0">
-//         <h2 className="mb-6 text-lg font-semibold tracking-tight text-gray-900">{title}</h2>
-//         <div className="flex gap-4 overflow-x-auto pb-4">
-//           {products.map((product) => (
-//             <div key={product._id} className="flex-shrink-0 w-[250px]">
-//               <ProductCard product={product} />
-//             </div>
-//           ))}
-//         </div>
-//       </div>
-//     </section>
-//   );
-// }
-
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Autoplay, Navigation } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/navigation';
+
 import ProductCard from "../product/ProductCard";
+import ProductSkeleton from "../product/ProductSkeleton";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
-export default function ProductCarousel({ title, products = [] }) {
-  const scrollRef = useRef(null);
-  const [current, setCurrent] = useState(0);
+export default function ProductCarousel({ title, products = [], loading = false }) {
+  const [isBeginning, setIsBeginning] = useState(true);
+  const [isEnd, setIsEnd] = useState(false);
+  const swiperRef = useRef(null);
 
-  if (!products.length) return null;
-
-  const scroll = (direction) => {
-    const container = scrollRef.current;
-    const cardWidth = 300;
-
-    if (direction === "left") {
-      container.scrollBy({ left: -cardWidth * 2, behavior: "smooth" });
-      setCurrent((prev) => Math.max(prev - 1, 0));
-    } else {
-      container.scrollBy({ left: cardWidth * 2, behavior: "smooth" });
-      setCurrent((prev) => Math.min(prev + 1, products.length - 1));
-    }
-  };
-
-  // auto slide
-  useEffect(() => {
-    const interval = setInterval(() => {
-      scroll("right");
-    }, 4000);
-
-    return () => clearInterval(interval);
-  }, []);
+  if (!loading && !products.length) return null;
 
   return (
-    <section className="bg-white py-12">
-      <div className="mx-auto max-w-6xl px-4 lg:px-0">
+    <section className="bg-white py-16 overflow-hidden">
+      <div className="mx-auto max-w-[1600px] px-4 lg:px-12">
 
-        {/* Title */}
-        <div className="mb-6 flex items-center justify-between">
-          <h2 className="text-xl font-semibold tracking-tight text-gray-900">
-            {title}
-          </h2>
+        {/* Header */}
+        <div className="mb-6 sm:mb-10 flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4">
+          <div className="space-y-1">
+            <h2 className="text-xl font-display tracking-tight text-gray-900 sm:text-3xl">
+                {title}
+            </h2>
+            <div className="h-1 w-12 bg-black rounded-full" />
+          </div>
 
-          {/* arrows */}
-          <div className="flex gap-2">
+          <div className="flex gap-3">
             <button
-              onClick={() => scroll("left")}
-              className="h-9 w-9 rounded-full border flex items-center justify-center hover:bg-gray-100"
+              onClick={() => swiperRef.current?.slidePrev()}
+              disabled={isBeginning && !swiperRef.current?.params?.loop}
+              className={`h-11 w-11 rounded-full border flex items-center justify-center transition-all ${
+                (!isBeginning || swiperRef.current?.params?.loop) ? 'border-gray-200 text-gray-900 hover:bg-black hover:text-white hover:border-black shadow-sm' : 'border-gray-100 text-gray-200 cursor-not-allowed'
+              }`}
             >
-              ←
+              <ChevronLeft size={20} />
             </button>
 
             <button
-              onClick={() => scroll("right")}
-              className="h-9 w-9 rounded-full border flex items-center justify-center hover:bg-gray-100"
+              onClick={() => swiperRef.current?.slideNext()}
+              disabled={isEnd && !swiperRef.current?.params?.loop}
+              className={`h-11 w-11 rounded-full border flex items-center justify-center transition-all ${
+                (!isEnd || swiperRef.current?.params?.loop) ? 'border-gray-200 text-gray-900 hover:bg-black hover:text-white hover:border-black shadow-sm' : 'border-gray-100 text-gray-200 cursor-not-allowed'
+              }`}
             >
-              →
+              <ChevronRight size={20} />
             </button>
           </div>
         </div>
 
-        {/* carousel */}
-        <div
-          ref={scrollRef}
-          className="flex gap-6 overflow-x-auto scroll-smooth scrollbar-hide"
-        >
-          {products.map((product) => (
-            <div key={product._id} className="min-w-[280px] md:min-w-[300px]">
-              <ProductCard product={product} />
-            </div>
-          ))}
-        </div>
-
-        {/* dots */}
-        <div className="mt-6 flex justify-center gap-2">
-          {products.slice(0, 6).map((_, i) => (
-            <div
-              key={i}
-              className={`h-2 w-2 rounded-full ${
-                current === i ? "bg-gray-900" : "bg-gray-300"
-              }`}
-            />
-          ))}
+        {/* Carousel Content */}
+        <div className="-mx-4 px-4 lg:-mx-8 lg:px-8 pb-4">
+          {loading ? (
+             <div className="flex gap-6 overflow-hidden">
+              {[1, 2, 3, 4, 5].map((i) => (
+                  <div key={i} className="min-w-[280px] md:min-w-[320px]">
+                    <ProductSkeleton />
+                  </div>
+                ))}
+             </div>
+          ) : (
+            <Swiper
+              modules={[Autoplay, Navigation]}
+              spaceBetween={16}
+              autoplay={{
+                delay: 1500,
+                disableOnInteraction: false,
+                pauseOnMouseEnter: true
+              }}
+              loop={true}
+              onSwiper={(swiper) => {
+                swiperRef.current = swiper;
+                setIsBeginning(swiper.isBeginning);
+                setIsEnd(swiper.isEnd);
+              }}
+              onSlideChange={(swiper) => {
+                setIsBeginning(swiper.isBeginning);
+                setIsEnd(swiper.isEnd);
+              }}
+              breakpoints={{
+                0: { slidesPerView: 2.5, spaceBetween: 12 },
+                640: { slidesPerView: 3.2, spaceBetween: 16 },
+                1024: { slidesPerView: 3.5, spaceBetween: 24 },
+                1280: { slidesPerView: 4.8, spaceBetween: 24 },
+                1600: { slidesPerView: 5.8, spaceBetween: 24 }
+              }}
+              className="!overflow-visible"
+            >
+              {products.map((product) => (
+                <SwiperSlide key={product._id} className="pb-4">
+                  <ProductCard product={product} />
+                </SwiperSlide>
+              ))}
+            </Swiper>
+          )}
         </div>
 
       </div>

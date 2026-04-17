@@ -1,94 +1,132 @@
-import { FaFacebookF, FaInstagram, FaTwitter, FaTiktok } from "react-icons/fa";
+"use client";
+import Link from "next/link";
+import Image from "next/image";
+import { FaInstagram, FaWhatsapp } from "react-icons/fa";
+import { useEffect, useState } from "react";
+import { fetchPublicSettings } from "@/lib/api";
 
 export default function Footer() {
+  const [brand, setBrand] = useState({
+    contactPhone: '923141988998',
+    instagramUrl: 'https://www.instagram.com/jannah_chic?igsh=MW56bG9lNzJudWRrMg==',
+  });
+
+  useEffect(() => {
+    fetchPublicSettings()
+      .then(res => {
+        if (res?.data) {
+          setBrand({
+            contactPhone: res.data.contactPhone || '923141988998',
+            instagramUrl: res.data.instagramUrl || 'https://www.instagram.com/jannah_chic?igsh=MW56bG9lNzJudWRrMg==',
+          });
+        }
+      })
+      .catch(() => {}); // fail silently, defaults still show
+  }, []);
+
   return (
-    <footer className="border-t border-gray-200 bg-white">
-      <div className="mx-auto max-w-6xl px-4 py-10 lg:px-0">
+    <footer className="border-t border-gray-100 bg-white pt-20 pb-12">
+      <div className="mx-auto max-w-6xl px-4 lg:px-8">
         {/* TOP GRID */}
-        <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-4 text-sm text-gray-600">
+        <div className="grid grid-cols-1 gap-12 sm:grid-cols-2 lg:grid-cols-4 text-sm text-gray-500">
 
           {/* Brand */}
-          <div className="flex flex-col gap-4 text-center md:text-left">
-            <div className="flex items-center gap-3 justify-center md:justify-start">
-              <img 
-                src="/logoo.png" 
-                alt="Logo" 
-                className="h-12 w-auto object-contain" 
-              />
-              <h3 className="text-xl font-display tracking-[0.2em] uppercase text-gray-900">
+          <div className="flex flex-col gap-6">
+            <Link href="/" className="flex items-center gap-3">
+              <div className="relative h-10 w-10 grayscale">
+                <Image 
+                  src="/logoo.png" 
+                  alt="Jannah Chic" 
+                  fill
+                  className="object-contain" 
+                />
+              </div>
+              <h3 className="text-lg font-display tracking-[0.2em] uppercase text-gray-900 border-l border-gray-100 pl-3">
                 Jannah Chic
               </h3>
-            </div>
-            <p className="text-gray-500 max-w-xs">
-              Elevating your fashion experience with curated Sarees, Frocks, and Unstitched collections.
+            </Link>
+            <p className="text-gray-400 max-w-xs leading-relaxed italic text-[12px]">
+              "Curating architectural silhouettes and timeless textures for the modern wardrobe."
             </p>
           </div>
 
-          {/* Shop */}
-          <div>
-            <h4 className="mb-3 font-semibold text-gray-900 uppercase tracking-wider text-xs">Shop</h4>
-            <ul className="space-y-2">
-              <li><a href="/shop" className="hover:text-black">All Collections</a></li>
-              <li><a href="/category/sarees" className="hover:text-black">Sarees</a></li>
-              <li><a href="/category/frocks" className="hover:text-black">Frocks</a></li>
-              <li><a href="/category/unstitched" className="hover:text-black">Unstitched</a></li>
-              <li><a href="/category/sale" className="hover:text-black">Sale</a></li>
+          {/* Collections */}
+          <div className="space-y-6">
+            <h4 className="font-bold text-gray-900 uppercase tracking-widest text-[10px]">The Collections</h4>
+            <ul className="space-y-3 font-semibold text-[12px]">
+              <li><Link href="/shop" className="hover:text-black transition-colors">All Pieces</Link></li>
+              <li><Link href="/category/sarees" className="hover:text-black transition-colors">House of Sarees</Link></li>
+              <li><Link href="/category/frocks" className="hover:text-black transition-colors">Signature Frocks</Link></li>
+              <li><Link href="/category/unstitched" className="hover:text-black transition-colors">Unstitched Textiles</Link></li>
+              <li><Link href="/sale" className="text-rose-600 hover:text-rose-700 transition-colors">Limited Vault (Sale)</Link></li>
             </ul>
           </div>
 
-          {/* Help */}
-          <div>
-            <h4 className="mb-4 font-bold text-gray-900 uppercase tracking-widest text-[11px]">Help</h4>
-            <ul className="space-y-3 text-[13px] font-medium">
-              <li><a href="/track" className="hover:text-black transition-colors">Track Order</a></li>
-              <li><a href="/shipping" className="hover:text-black transition-colors">Shipping Info</a></li>
-              <li><a href="/returns" className="hover:text-black transition-colors">Returns & Exchanges</a></li>
-              <li><a href="/faqs" className="hover:text-black transition-colors">FAQs</a></li>
-              <li><a href="/contact" className="hover:text-black transition-colors">Contact Support</a></li>
+          {/* Concierge */}
+          <div className="space-y-6">
+            <h4 className="font-bold text-gray-900 uppercase tracking-widest text-[10px]">Concierge</h4>
+            <ul className="space-y-3 font-semibold text-[12px]">
+              <li><Link href="/track" className="hover:text-black transition-colors">Tracking Logistics</Link></li>
+              <li><Link href="/shipping" className="hover:text-black transition-colors">Shipping Information</Link></li>
+              <li><Link href="/returns" className="hover:text-black transition-colors">Refund Policy</Link></li>
+              <li><Link href="/faqs" className="hover:text-black transition-colors">Frequently Asked</Link></li>
+              <li><Link href="/contact" className="hover:text-black transition-colors">Atelier Support</Link></li>
             </ul>
           </div>
 
-          {/* Company */}
-          <div>
-            <h4 className="mb-4 font-bold text-gray-900 uppercase tracking-widest text-[11px]">Company</h4>
-            <ul className="space-y-3 text-[13px] font-medium">
-              <li><a href="/about" className="hover:text-black transition-colors">About Us</a></li>
-              <li><a href="/terms" className="hover:text-black transition-colors">Terms & Conditions</a></li>
-              <li><a href="/privacy" className="hover:text-black transition-colors">Privacy Policy</a></li>
-              <li><a href="/careers" className="hover:text-black transition-colors">Careers</a></li>
+          {/* The Label */}
+          <div className="space-y-6">
+            <h4 className="font-bold text-gray-900 uppercase tracking-widest text-[10px]">The Label</h4>
+            <ul className="space-y-3 font-semibold text-[12px]">
+              <li><Link href="/about" className="hover:text-black transition-colors">Our Story</Link></li>
+              <li><Link href="/terms" className="hover:text-black transition-colors">Terms & Conditions</Link></li>
+              <li><Link href="/privacy" className="hover:text-black transition-colors">Privacy Charter</Link></li>
+              <li><Link href="/careers" className="hover:text-black transition-colors">Join the Atelier</Link></li>
             </ul>
           </div>
 
         </div>
 
-        {/* Divider */}
-        <div className="my-8 border-t border-gray-200"></div>
-
         {/* BOTTOM ROW */}
-        <div className="flex flex-col items-center justify-between gap-6 text-sm text-gray-500 md:flex-row">
-
+        <div className="mt-20 pt-10 border-t border-gray-50 flex flex-col items-center justify-between gap-8 text-[10px] font-bold uppercase tracking-widest text-gray-400 md:flex-row">
+          
           {/* Social Icons */}
-          <div className="flex gap-5 text-gray-600">
-            <a href="#" aria-label="Facebook" className="hover:text-black">
-              <FaFacebookF className="h-5 w-5" />
+          <div className="flex gap-6 items-center">
+            <a
+              href={brand.instagramUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Instagram"
+              className="text-gray-400 hover:text-pink-500 transition-all hover:-translate-y-1 text-base"
+            >
+              <FaInstagram />
             </a>
-            <a href="#" aria-label="Instagram" className="hover:text-black">
-              <FaInstagram className="h-5 w-5" />
-            </a>
-            <a href="#" aria-label="Twitter" className="hover:text-black">
-              <FaTwitter className="h-5 w-5" />
-            </a>
-            <a href="#" aria-label="TikTok" className="hover:text-black">
-              <FaTiktok className="h-5 w-5" />
+            <a
+              href={`https://wa.me/${brand.contactPhone}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="WhatsApp"
+              className="text-gray-400 hover:text-green-500 transition-all hover:-translate-y-1 text-base"
+            >
+              <FaWhatsapp />
             </a>
           </div>
 
-          {/* Copyright */}
-          <p className="text-center md:text-right">
-            &copy; {new Date().getFullYear()} Jannah Chic. All rights reserved.
-          </p>
+          <div className="flex items-center gap-4">
+            <Link href="/auth/login" className="cursor-default border-none outline-none">
+              &copy; {new Date().getFullYear()} Jannah Chic Atelier.
+            </Link>
+            <span className="h-1 w-1 bg-gray-200 rounded-full"></span>
+            <span className="text-gray-900">Designed for Modest Perfection.</span>
+          </div>
+
+          <div className="flex gap-4 items-center grayscale opacity-50">
+             <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" className="h-3" alt="Visa" />
+             <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" className="h-5" alt="Mastercard" />
+          </div>
         </div>
       </div>
     </footer>
   );
 }
+

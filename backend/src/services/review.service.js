@@ -31,34 +31,50 @@ async function updateProductRating(productId) {
 }
 
 async function createReview(userId, productId, payload) {
-  // 1. Check if user already reviewed this product
-  const existing = await Review.findOne({ user: userId, product: productId });
-  if (existing) {
-    const err = new Error('You have already reviewed this product');
-    err.statusCode = 400;
-    throw err;
+  const { rating, comment, title, guestName, guestEmail } = payload;
+
+  if (userId) {
+    // Logged-in user: check for duplicate
+    const existing = await Review.findOne({ user: userId, product: productId });
+    if (existing) {
+      const err = new Error('You have already reviewed this product');
+      err.statusCode = 400;
+      throw err;
+    }
+  } else {
+    // Guest: require name and email
+    if (!guestName || !guestEmail) {
+      const err = new Error('Please provide your name and email to submit a review');
+      err.statusCode = 400;
+      throw err;
+    }
+    // Check if same guest email already reviewed this product
+    const existing = await Review.findOne({ guestEmail, product: productId });
+    if (existing) {
+      const err = new Error('A review from this email already exists for this product');
+      err.statusCode = 400;
+      throw err;
+    }
   }
 
-  // 2. Optional: Check if user purchased the product
-  const hasPurchased = await Order.findOne({
-    user: userId,
-    'items.product': productId,
-    status: 'delivered',
-  });
-
-  // Note: We'll allow reviews even if not purchased for now to make testing easier,
-  // but we could mark them as "Verified Purchase" if hasPurchased is true.
-  
-  const review = await Review.create({
-    user: userId,
+  const reviewData = {
     product: productId,
-    rating: payload.rating,
-    comment: payload.comment,
-    title: payload.title,
-    isApproved: true, // Auto-approve for now
-  });
+    rating,
+    comment,
+    title,
+    isApproved: true,
+  };
 
-  // 3. Update product rating stats
+  if (userId) {
+    reviewData.user = userId;
+  } else {
+    reviewData.guestName = guestName;
+    reviewData.guestEmail = guestEmail;
+  }
+
+  const review = await Review.create(reviewData);
+
+  // Update product rating stats
   await updateProductRating(productId);
 
   return review;
@@ -75,6 +91,28 @@ async function getProductReviews(productId, query = {}) {
     .limit(limit);
 
   const total = await Review.countDocuments({ product: productId, isApproved: true });
+
+  return {
+    items: reviews,
+    total,
+    page: Number(page),
+    limit: Number(limit),
+    totalPages: Math.ceil(total / limit),
+  };
+}
+
+async function getAllReviews(query = {}) {
+  const { page = 1, limit = 20 } = query;
+  const skip = (page - 1) * limit;
+
+  const reviews = await Review.find()
+    .populate('user', 'firstName lastName')
+    .populate('product', 'name images sku')
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(limit);
+
+  const total = await Review.countDocuments();
 
   return {
     items: reviews,
@@ -108,6 +146,7 @@ async function deleteReview(userId, reviewId, isAdmin = false) {
 module.exports = {
   createReview,
   getProductReviews,
+  getAllReviews,
   deleteReview,
   updateProductRating,
 };

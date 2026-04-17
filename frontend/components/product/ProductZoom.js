@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
 
 export default function ProductZoom({ src, alt }) {
@@ -22,16 +23,19 @@ export default function ProductZoom({ src, alt }) {
 
   return (
     <div
-      className="relative w-full aspect-[2/3] overflow-hidden rounded-[2.5rem] bg-[#fdfdfd] border border-gray-100/50 shadow-sm"
+      className="relative w-full aspect-[4/5] lg:aspect-[2/3] overflow-hidden rounded-[2.5rem] bg-[#fdfdfd] border border-gray-100/50 shadow-sm cursor-zoom-in group"
       onMouseMove={handleMouseMove}
       onMouseEnter={() => setShowZoom(true)}
       onMouseLeave={() => setShowZoom(false)}
     >
-      {/* Normal Image */}
-      <img
+      {/* Normal Image Optimized */}
+      <Image
         src={src}
         alt={alt}
-        className="w-full h-full object-cover transition-opacity duration-300"
+        fill
+        sizes="(max-width: 768px) 100vw, 50vw"
+        priority
+        className="object-cover transition-opacity duration-300"
       />
 
 

@@ -1,19 +1,18 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useWishlistStore } from "@/store/wishlistStore";
 import ProductCard from "@/components/product/ProductCard";
 
 export default function WishlistPage() {
-  const wishlist = useWishlistStore((s) => s.wishlist);
-  const loadWishlist = useWishlistStore((s) => s.loadWishlist);
-  const loading = useWishlistStore((s) => s.loading);
+  const [isLoaded, setIsLoaded] = useState(false);
+  const wishlist = useWishlistStore((s) => s.wishlist || []);
 
   useEffect(() => {
-    loadWishlist();
+    setIsLoaded(true);
   }, []);
 
-  if (loading)
+  if (!isLoaded)
     return <p className="text-center mt-10">Loading wishlist...</p>;
 
   if (!wishlist.length)

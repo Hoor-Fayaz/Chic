@@ -162,7 +162,14 @@ const productSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-productSchema.index({ name: 'text', description: 'text', tags: 'text' });
+productSchema.index({ 
+  name: 'text', 
+  description: 'text', 
+  tags: 'text',
+  fabric: 'text',
+  composition: 'text',
+  colors: 'text'
+});
 
 module.exports = mongoose.model('Product', productSchema);
 

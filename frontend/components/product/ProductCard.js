@@ -2,6 +2,7 @@
 
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Heart } from "lucide-react";
@@ -23,9 +24,11 @@ export default function ProductCard({ product, showRemove = false, onRemove = nu
   const hoverImage =
     product.images?.find((img) => !img.isPrimary) || product.images?.[1] || null;
 
+  const pieceType = product.tags?.find(t => t.toLowerCase() === '2 piece' || t.toLowerCase() === '3 piece');
+
   return (
     <div className="group flex flex-col bg-white overflow-hidden transition-all duration-500">
-      <div className="relative overflow-hidden rounded-[2.5rem] bg-[#f8f8f8] aspect-[2/3]">
+      <div className="relative overflow-hidden rounded-[2.5rem] bg-[#f8f8f8] aspect-[4/5] lg:aspect-[2/3]">
 
         {/* Wishlist Icon */}
         <button
@@ -33,10 +36,6 @@ export default function ProductCard({ product, showRemove = false, onRemove = nu
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
-            if (!user) {
-              router.push("/auth/login");
-              return;
-            }
             if (liked) {
                 showToast(`Removed from wishlist`, "info");
             } else {
@@ -87,18 +86,22 @@ export default function ProductCard({ product, showRemove = false, onRemove = nu
         <Link href={`/product/${product.slug}`} className="block h-full w-full">
           {primaryImage ? (
             <div className="relative h-full w-full">
-              <img
+              <Image
                 src={primaryImage.url}
                 alt={primaryImage.alt || product.name}
-                className={`h-full w-full object-cover transition-all duration-700 ease-out sm:scale-100 ${
+                fill
+                sizes="(max-width: 768px) 50vw, (max-width: 1200px) 25vw, 20vw"
+                className={`object-cover transition-all duration-700 ease-out ${
                   hoverImage ? "group-hover:opacity-0 group-hover:scale-105" : "group-hover:scale-110"
                 }`}
               />
               {hoverImage && (
-                <img
+                <Image
                   src={hoverImage.url}
                   alt={hoverImage.alt || product.name}
-                  className="absolute inset-0 h-full w-full object-cover opacity-0 scale-110 transition-all duration-700 ease-out group-hover:opacity-100 group-hover:scale-100"
+                  fill
+                  sizes="(max-width: 768px) 50vw, (max-width: 1200px) 25vw, 20vw"
+                  className="object-cover opacity-0 scale-110 transition-all duration-700 ease-out group-hover:opacity-100 group-hover:scale-100"
                 />
               )}
             </div>
@@ -117,6 +120,8 @@ export default function ProductCard({ product, showRemove = false, onRemove = nu
         <div className="space-y-0.5">
           <p className="text-[10px] uppercase font-bold tracking-[0.15em] text-gray-400">
             {product.category?.name || "Premium Collection"}
+            {pieceType && <span className="text-gray-300 ml-2 mr-2">|</span>}
+            {pieceType && <span className="text-gray-500">{pieceType}</span>}
           </p>
           <p className="text-[14px] font-medium text-gray-900 tracking-tight leading-tight truncate">
             {product.name}

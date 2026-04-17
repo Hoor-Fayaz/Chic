@@ -1,8 +1,7 @@
 import '../styles/globals.css';
-import Navbar from '../components/layout/Navbar';
-import Footer from '../components/layout/Footer';
 import AuthHydrator from '../components/layout/AuthHydrator';
 import Toast from '../components/ui/Toast';
+import Shell from '../components/layout/Shell';
 
 export const metadata = {
   title: 'Chic | Premium Clothing',
@@ -16,9 +15,7 @@ export default function RootLayout({ children }) {
         <div className="flex min-h-screen flex-col bg-white">
           <AuthHydrator />
           <Toast />
-          <Navbar />
-          <main className="flex-1">{children}</main>
-          <Footer />
+          <Shell>{children}</Shell>
         </div>
       </body>
     </html>

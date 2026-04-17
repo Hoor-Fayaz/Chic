@@ -32,4 +32,10 @@ router.get('/settings', getSettingsHandler);
  */
 router.patch('/settings', updateSettingsHandler);
 
+/**
+ * @route GET /api/v1/admin/reviews
+ * @desc Get all reviews across the platform
+ */
+router.get('/reviews', require('../controllers/review.controller').getAllReviewsHandler);
+
 module.exports = router;
