@@ -1,4 +1,5 @@
 import { fetchPage } from "@/lib/cms";
+export const dynamic = "force-dynamic";
 import { fetchPublicSettings } from "@/lib/api";
 import PageContent from "@/components/ui/PageContent";
 import { ArrowRight } from "lucide-react";

@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { fetchPage } from "@/lib/cms";
 import { fetchPublicSettings } from "@/lib/api";
 import PageContent from "@/components/ui/PageContent";

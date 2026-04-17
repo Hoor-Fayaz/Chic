@@ -6,6 +6,13 @@ import { API_BASE_URL } from "./config";
  */
 export async function fetchPage(slug) {
   const base = (API_BASE_URL || "").replace(/\/$/, "");
+  
+  // Safety check for build-time environments without a live API link
+  if (!base || base.includes("localhost:5000")) {
+    console.warn(`⚠️ Skipping live CMS fetch for [${slug}] - API URL not set or points to localhost.`);
+    return { success: false, data: null };
+  }
+
   const url = `${base}/pages/${slug}`;
 
   try {
@@ -14,7 +21,7 @@ export async function fetchPage(slug) {
       headers: {
         "Content-Type": "application/json",
       },
-      cache: "no-store", // Ensure we always get fresh content from CMS
+      cache: "no-store", 
     });
 
     if (!res.ok) {

@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { fetchPublicSettings } from "@/lib/api";
 import FaqAccordion from "@/components/faqs/FaqAccordion";
 

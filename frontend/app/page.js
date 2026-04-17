@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import HeroSection from "../components/home/HeroSection";
 import FeaturedCollections from "../components/home/FeaturedCollections";
 import ProductCarousel from "../components/home/ProductCarousel";
@@ -14,7 +15,6 @@ export const metadata = {
   },
 };
 
-export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
   let featured = [];
