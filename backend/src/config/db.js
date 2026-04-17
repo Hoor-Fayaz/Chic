@@ -1,8 +1,7 @@
-const mongoose = require('mongoose');
-const dns = require('dns').promises;
-const dnsSync = require('dns');
-const url = require('url');
 const net = require('net');
+
+// Disable buffering so we fail FAST if the IP is blocked
+mongoose.set('bufferCommands', false);
 
 // Comprehensive DNS servers for maximum compatibility
 const DNS_SERVERS = [
@@ -138,58 +137,42 @@ async function tryConnect(uri, label, timeout = 10000) {
     }
 
     await mongoose.connect(uri, {
-      autoIndex: true,
       serverSelectionTimeoutMS: 5000,
-      heartbeatFrequencyMS: 2000,
-      maxPoolSize: 5,
-      minPoolSize: 1,
-      maxIdleTimeMS: 15000,
+      socketTimeoutMS: 45000,
+      family: 4, // Force IPv4 for better compatibility with Atlas on Vercel
     });
 
-    // eslint-disable-next-line no-console
-    console.log(`✅ Connected to ${label}`);
     return true;
   } catch (err) {
-    // eslint-disable-next-line no-console
     console.error(`❌ ${label} failed:`, err.message);
     return false;
   }
 }
 
+// Global Connection Error Listeners
+mongoose.connection.on('error', err => {
+  console.error('Mongoose global connection error:', err);
+});
+
+mongoose.connection.on('disconnected', () => {
+  console.log('Mongoose connection disconnected');
+});
+
 async function connectDB() {
-  const srvUri = process.env.MONGODB_URI;
-  const explicitLocalUri = process.env.MONGO_URI;
-  const defaultLocalUri = 'mongodb://127.0.0.1:27017/chic_db';
+  const uri = process.env.MONGODB_URI;
 
-  // eslint-disable-next-line no-console
-  console.log('⏳ Connecting to MongoDB (network-agnostic mode)...');
+  if (mongoose.connection.readyState === 1) return;
 
-  // Attempt 1: Try SRV URI with enhanced DNS and retry (Atlas)
-  if (srvUri) {
-    const ok = await tryConnect(srvUri, 'MongoDB Atlas (SRV)', 8000);
-    if (ok) return;
+  console.log('⏳ Connecting to MongoDB...');
 
-    // Attempt 2: Convert SRV to explicit URI with IP resolution (bypasses DNS restrictions)
-    // eslint-disable-next-line no-console
-    console.log('⏳ Falling back to explicit host URI with IP resolution...');
-    const explicitUri = await buildExplicitMongoUri(srvUri);
-    if (explicitUri) {
-      const ok2 = await tryConnect(explicitUri, 'MongoDB Atlas (explicit hosts + IPs)', 8000);
-      if (ok2) return;
+  try {
+    const ok = await tryConnect(uri, 'MongoDB Atlas', 5000);
+    if (!ok) {
+      throw new Error('Connection refused. Please check if your IP is whitelisted (0.0.0.0/0) in MongoDB Atlas.');
     }
+  } catch (err) {
+    throw err;
   }
-
-  // Attempt 3: Try explicitly configured local MongoDB
-  if (explicitLocalUri && explicitLocalUri !== srvUri) {
-    const ok = await tryConnect(explicitLocalUri, 'Local MongoDB (configured)', 5000);
-    if (ok) return;
-  }
-
-  // Attempt 4: Try default local MongoDB as last resort
-  const ok = await tryConnect(defaultLocalUri, 'Local MongoDB (default)', 3000);
-  if (ok) return;
-
-  throw new Error('All MongoDB connection attempts failed. Check Atlas credentials and IP whitelist.');
 }
 
 module.exports = { connectDB };
