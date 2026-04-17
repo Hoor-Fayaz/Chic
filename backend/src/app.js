@@ -18,6 +18,11 @@ require('./config/passport');
 
 const app = express();
 
+// Healthcheck (Top-level for reachability even if DB is connecting)
+app.get('/health', (req, res) => {
+  res.json({ status: 'ok', environment: process.env.NODE_ENV });
+});
+
 // Database connection middleware for Serverless compatibility
 let isConnected = false;
 app.use(async (req, res, next) => {
@@ -53,15 +58,26 @@ app.use(
       // Allow requests with no origin (like mobile apps or curl)
       if (!origin) return callback(null, true);
       
+      const normalizedOrigin = origin.replace(/\/$/, "");
+      const frontendUrl = (process.env.FRONTEND_URL || "").replace(/\/$/, "");
+
       const allowedOrigins = [
-        process.env.FRONTEND_URL,
+        frontendUrl,
         'http://localhost:3000',
-        'http://127.0.0.1:3000'
+        'http://127.0.0.1:3000',
+        // Allow all Vercel previews for easier testing
+        /\.vercel\.app$/ 
       ].filter(Boolean);
 
-      if (allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV !== 'production') {
+      const isAllowed = allowedOrigins.some(pattern => {
+        if (pattern instanceof RegExp) return pattern.test(normalizedOrigin);
+        return pattern === normalizedOrigin;
+      });
+
+      if (isAllowed || process.env.NODE_ENV !== 'production') {
         callback(null, true);
       } else {
+        console.warn(`CORS blocked for origin: ${origin}`);
         callback(new Error('Not allowed by CORS'));
       }
     },
@@ -90,11 +106,6 @@ app.use(limiter);
 
 // API routes
 app.use('/api/v1', apiRoutes);
-
-// Healthcheck
-app.get('/health', (req, res) => {
-  res.json({ status: 'ok' });
-});
 
 // 404 and error handlers
 app.use(notFoundHandler);

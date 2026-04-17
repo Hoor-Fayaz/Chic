@@ -38,11 +38,18 @@ export async function apiFetch(path, options = {}) {
 
     return await res.json(); // ✅ full response as before
   } catch (err) {
-    console.error("API Fetch Error:", err);
+    if (typeof window === "undefined") {
+      console.error(`❌ Server-side API Failure [${options.method || 'GET'} ${url}]:`, err.message);
+    } else {
+      console.error("API Fetch Error:", err);
+    }
     
     // Improved user-facing error message for connection failures
     if (err.name === "TypeError" && err.message === "Failed to fetch") {
-      throw new Error(`Unable to connect to the backend server at ${url}. Please ensure the backend is running and reachable from the browser.`);
+      const hint = url.startsWith('http://') && typeof window !== 'undefined' && window.location.protocol === 'https:'
+        ? " (Mixed Content: Trying to call HTTP API from HTTPS site)"
+        : "";
+      throw new Error(`Unable to connect to the backend server at ${url}${hint}. Please ensure the backend is running and reachable.`);
     }
     
     throw err;

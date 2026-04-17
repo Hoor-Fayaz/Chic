@@ -139,11 +139,11 @@ async function tryConnect(uri, label, timeout = 10000) {
 
     await mongoose.connect(uri, {
       autoIndex: true,
-      serverSelectionTimeoutMS: timeout,
+      serverSelectionTimeoutMS: 5000,
       heartbeatFrequencyMS: 2000,
-      maxPoolSize: 10,
-      minPoolSize: 2,
-      maxIdleTimeMS: 30000,
+      maxPoolSize: 5,
+      minPoolSize: 1,
+      maxIdleTimeMS: 15000,
     });
 
     // eslint-disable-next-line no-console
@@ -189,17 +189,7 @@ async function connectDB() {
   const ok = await tryConnect(defaultLocalUri, 'Local MongoDB (default)', 3000);
   if (ok) return;
 
-  // All attempts failed - provide comprehensive troubleshooting
-  // eslint-disable-next-line no-console
-  console.error('\n❌ All MongoDB connection attempts failed.');
-  console.error('💡 Troubleshooting steps:');
-  console.error('  1. Check MongoDB Atlas credentials in .env file');
-  console.error('  2. Whitelist your current IP in MongoDB Atlas Network Access');
-  console.error('  3. Try changing your DNS servers to 8.8.8.8 and 1.1.1.1');
-  console.error('  4. Disable VPN/firewall temporarily if using one');
-  console.error('  5. For local development: docker run -d -p 27017:27017 mongo');
-  console.error('  6. Check if your network blocks MongoDB Atlas (some corporate networks do)');
-  process.exit(1);
+  throw new Error('All MongoDB connection attempts failed. Check Atlas credentials and IP whitelist.');
 }
 
 module.exports = { connectDB };
