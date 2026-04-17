@@ -26,12 +26,13 @@ export async function fetchPage(slug) {
 
     if (!res.ok) {
       if (res.status === 404) return { success: false, data: null };
-      throw new Error(`Failed to fetch page: ${res.statusText}`);
+      return { success: false, data: null, error: `Status ${res.status}` };
     }
 
-    return await res.json();
+    const json = await res.json();
+    return json || { success: false, data: null };
   } catch (err) {
-    console.error(`CMS Fetch Error (${slug}):`, err);
+    console.error(`❌ CMS Fetch Fatal Error [${slug}]:`, err.message);
     return { success: false, data: null };
   }
 }

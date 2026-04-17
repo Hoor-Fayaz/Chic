@@ -4,20 +4,33 @@ import { fetchPublicSettings } from "@/lib/api";
 import PageContent from "@/components/ui/PageContent";
 
 export async function generateMetadata() {
-  const res = await fetchPage("shipping");
-  const page = res?.data;
-  return {
-    title: `${page?.title || "Shipping"} | Jannah Chic`,
-    description: page?.content?.substring(0, 160) || "Shipping policies and delivery information for Jannah Chic.",
-  };
+  try {
+    const res = await fetchPage("shipping");
+    const page = res?.data;
+    return {
+      title: `${page?.title || "Shipping"} | Jannah Chic`,
+      description: page?.content?.substring(0, 160) || "Shipping policies and delivery information for Jannah Chic.",
+    };
+  } catch (e) {
+    return { title: "Shipping | Jannah Chic" };
+  }
 }
 
 export default async function ShippingPage() {
-  const res = await fetchPage("shipping");
-  const page = res?.data;
+  let page = null;
+  let settings = null;
 
-  const settingsRes = await fetchPublicSettings().catch(() => null);
-  const settings = settingsRes?.data;
+  try {
+    const [pageRes, settingsRes] = await Promise.all([
+      fetchPage("shipping"),
+      fetchPublicSettings(),
+    ]);
+    page = pageRes?.data;
+    settings = settingsRes?.data;
+  } catch (e) {
+    console.error("Failed to load shipping page data:", e);
+  }
+
   const contactPhone = settings?.contactPhone || "923141988998";
   const formattedPhone = contactPhone.replace(/\D/g, "");
 

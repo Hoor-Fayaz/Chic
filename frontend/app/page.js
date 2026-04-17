@@ -28,11 +28,11 @@ export default async function HomePage() {
       fetchCategories(),
     ]);
 
-    featured = featuredRes.data?.items || [];
-    newArrivals = newArrivalsRes.data?.items || [];
-    categories = categoriesRes.data?.items || [];
+    featured = featuredRes?.data?.items || [];
+    newArrivals = newArrivalsRes?.data?.items || [];
+    categories = categoriesRes?.data?.items || [];
   } catch (e) {
-    console.error("Failed to load products for home page", e);
+    console.error("❌ Failed to load products for home page:", e.message);
   }
 
   return (

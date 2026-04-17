@@ -4,21 +4,34 @@ import { fetchPublicSettings } from "@/lib/api";
 import PageContent from "@/components/ui/PageContent";
 
 export async function generateMetadata() {
-  const res = await fetchPage("careers");
-  const page = res?.data;
-  return {
-    title: `${page?.title || "Careers"} | Jannah Chic`,
-    description: page?.content?.substring(0, 160) || "Join the Jannah Chic atelier and explore career opportunities in fashion.",
-  };
+  try {
+    const res = await fetchPage("careers");
+    const page = res?.data;
+    return {
+      title: `${page?.title || "Careers"} | Jannah Chic`,
+      description: page?.content?.substring(0, 160) || "Join the Jannah Chic atelier and explore career opportunities in fashion.",
+    };
+  } catch (e) {
+    return { title: "Careers | Jannah Chic" };
+  }
 }
 
 export default async function CareersPage() {
-  const [res, settingsRes] = await Promise.all([
-    fetchPage("careers"),
-    fetchPublicSettings(),
-  ]);
-  const page = res?.data;
-  const talentEmail = settingsRes?.data?.talentEmail || 'talent@jannahchic.com';
+  let page = null;
+  let settings = null;
+
+  try {
+    const [res, settingsRes] = await Promise.all([
+      fetchPage("careers"),
+      fetchPublicSettings(),
+    ]);
+    page = res?.data;
+    settings = settingsRes?.data;
+  } catch (e) {
+    console.error("Failed to load Careers page data:", e);
+  }
+
+  const talentEmail = settings?.talentEmail || 'talent@jannahchic.com';
 
   return (
     <div className="space-y-16 pb-20 max-w-2xl animate-in fade-in duration-1000">

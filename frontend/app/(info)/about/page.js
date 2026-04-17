@@ -4,17 +4,26 @@ import PageContent from "@/components/ui/PageContent";
 import { Sparkles, Heart, Star, Users } from "lucide-react";
 
 export async function generateMetadata() {
-  const res = await fetchPage("about");
-  const page = res?.data;
-  return {
-    title: `${page?.title || "Our Story"} | Jannah Chic`,
-    description: page?.content?.substring(0, 160) || "Discover the heritage and philosophy of Jannah Chic.",
-  };
+  try {
+    const res = await fetchPage("about");
+    const page = res?.data;
+    return {
+      title: `${page?.title || "Our Story"} | Jannah Chic`,
+      description: page?.content?.substring(0, 160) || "Discover the heritage and philosophy of Jannah Chic.",
+    };
+  } catch (e) {
+    return { title: "Our Story | Jannah Chic" };
+  }
 }
 
 export default async function AboutPage() {
-  const res = await fetchPage("about");
-  const page = res?.data;
+  let page = null;
+  try {
+    const res = await fetchPage("about");
+    page = res?.data;
+  } catch (e) {
+    console.error("❌ Failed to load About page data:", e.message);
+  }
 
   return (
     <div className="space-y-20 pb-20 max-w-2xl animate-in fade-in duration-1000">

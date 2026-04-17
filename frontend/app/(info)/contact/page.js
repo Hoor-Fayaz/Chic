@@ -5,25 +5,37 @@ import PageContent from "@/components/ui/PageContent";
 import ContactFormWrapper from "@/components/contact/ContactFormWrapper";
 
 export async function generateMetadata() {
-  const res = await fetchPage("contact");
-  const page = res?.data;
-  return {
-    title: `${page?.title || "Contact Us"} | Jannah Chic`,
-    description: page?.content?.substring(0, 160) || "Get in touch with Jannah Chic for inquiries or support.",
-  };
+  try {
+    const res = await fetchPage("contact");
+    const page = res?.data;
+    return {
+      title: `${page?.title || "Contact Us"} | Jannah Chic`,
+      description: page?.content?.substring(0, 160) || "Get in touch with Jannah Chic for inquiries or support.",
+    };
+  } catch (e) {
+    return { title: "Contact Us | Jannah Chic" };
+  }
 }
 
 export default async function ContactPage() {
-  const [pageRes, settingsRes] = await Promise.all([
-    fetchPage("contact"),
-    fetchPublicSettings(),
-  ]);
+  let page = null;
+  let settings = null;
 
-  const page = pageRes?.data;
+  try {
+    const [pageRes, settingsRes] = await Promise.all([
+      fetchPage("contact"),
+      fetchPublicSettings(),
+    ]);
+    page = pageRes?.data;
+    settings = settingsRes?.data;
+  } catch (e) {
+    console.error("❌ Failed to load Contact page data:", e.message);
+  }
+
   const brand = {
-    contactPhone: settingsRes?.data?.contactPhone || '923141988998',
-    contactEmail: settingsRes?.data?.contactEmail || 'support@jannahchic.com',
-    storeAddress: settingsRes?.data?.storeAddress || 'DHA Phase 6, Pakistan',
+    contactPhone: settings?.contactPhone || '923141988998',
+    contactEmail: settings?.contactEmail || 'support@jannahchic.com',
+    storeAddress: settings?.storeAddress || 'DHA Phase 6, Pakistan',
   };
 
   // Build a Google Maps search URL from the address
