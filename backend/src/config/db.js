@@ -1,4 +1,8 @@
 const net = require('net');
+const mongoose = require('mongoose');
+const dns = require('dns').promises;
+const dnsSync = require('dns');
+const url = require('url');
 
 // Disable buffering so we fail FAST if the IP is blocked
 mongoose.set('bufferCommands', false);
