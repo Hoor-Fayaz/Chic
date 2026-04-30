@@ -42,7 +42,7 @@ export default function HeroSection() {
       <div className="mx-auto grid max-w-[1600px] items-center gap-12 px-4 py-12 lg:grid-cols-2 lg:px-12 lg:py-20">
         
         {/* LEFT CONTENT */}
-        <div className="flex flex-col justify-center space-y-6 sm:space-y-8 animate-in fade-in slide-in-from-left duration-700 lg:pr-8">
+        <div className="relative z-10 flex flex-col justify-center space-y-6 sm:space-y-8 animate-in fade-in slide-in-from-left duration-700 lg:pr-8">
           <div className="space-y-2">
             <p className="text-[10px] font-sans font-bold uppercase tracking-[0.4em] text-gray-400">
                 {hero.subtitle || "New Season • Jannah Chic"}
@@ -76,7 +76,7 @@ export default function HeroSection() {
         </div>
 
         {/* RIGHT IMAGE BANNERS (Slider) */}
-        <div className="relative aspect-[4/5] md:aspect-auto md:h-[550px] lg:h-[620px] overflow-hidden rounded-[2.5rem] md:rounded-[3.5rem] shadow-[-15px_15px_50px_-15px_rgba(0,0,0,0.12)] bg-gray-100 border border-white lg:rotate-1">
+        <div className="relative aspect-[4/5] md:aspect-auto md:h-[450px] lg:h-[620px] overflow-hidden rounded-[2.5rem] md:rounded-[3.5rem] shadow-[-15px_15px_50px_-15px_rgba(0,0,0,0.12)] bg-gray-100 border border-white rotate-0 lg:rotate-1">
           {slides.map((slide, i) => (
             <Link
                 key={i}

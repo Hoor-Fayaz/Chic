@@ -96,6 +96,10 @@ export default function Navbar() {
     } else {
       document.body.style.overflow = "unset";
     }
+
+    return () => {
+      document.body.style.overflow = "unset";
+    };
   }, [mobileMenuOpen, searchOpen]);
 
   // Dependencies removed for LocalStorage flow
@@ -112,13 +116,13 @@ export default function Navbar() {
 
   return (
     <>
-      <header className="sticky top-0 z-40 border-b border-gray-200 bg-white/80 backdrop-blur">
+      <header className="sticky top-0 z-30 border-b border-gray-200 bg-white/90 backdrop-blur-md">
         <div className="mx-auto flex max-w-[1600px] items-center justify-between px-4 py-4 lg:px-12">
           
           <div className="flex items-center gap-4">
             {/* Mobile Hamburger Icon */}
             <button 
-              className="md:hidden p-1 text-gray-700 hover:text-black"
+              className="md:hidden -ml-2 p-3 text-gray-700 hover:text-black active:scale-95 transition-transform"
               onClick={() => setMobileMenuOpen(true)}
               aria-label="Open menu"
             >
@@ -259,8 +263,18 @@ export default function Navbar() {
 
       {/* Mobile Slide-out Menu */}
       {mobileMenuOpen && (
-        <div className="fixed inset-0 z-50 md:hidden bg-black/50 backdrop-blur-sm transition-opacity">
-          <div className="fixed inset-y-0 left-0 w-[80%] max-w-[300px] bg-white shadow-2xl flex flex-col h-full animate-in slide-in-from-left duration-300">
+        <div
+          className="fixed inset-0 z-40 md:hidden bg-black/50 backdrop-blur-sm transition-opacity"
+          onClick={() => setMobileMenuOpen(false)}
+          role="presentation"
+        >
+          <div
+            className="fixed inset-y-0 left-0 z-50 w-[80%] max-w-[300px] bg-white shadow-2xl flex flex-col h-full animate-in slide-in-from-left duration-300"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Mobile navigation"
+            onClick={(e) => e.stopPropagation()}
+          >
             
             {/* Mobile Menu Header */}
             <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
@@ -295,6 +309,7 @@ export default function Navbar() {
                   <Link
                     key={item.href}
                     href={item.href}
+                    onClick={() => setMobileMenuOpen(false)}
                     className={`block py-3 text-sm font-bold uppercase tracking-widest border-b border-gray-50 last:border-0 ${
                       isActive ? "text-black" : "text-gray-800"
                     }`}

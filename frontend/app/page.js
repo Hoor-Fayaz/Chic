@@ -3,6 +3,8 @@ import HeroSection from "../components/home/HeroSection";
 import FeaturedCollections from "../components/home/FeaturedCollections";
 import ProductCarousel from "../components/home/ProductCarousel";
 import AutoSwiper from "../components/home/AutoSwiper"; // new swiper
+import ValuePropsStrip from "../components/home/ValuePropsStrip";
+import NewsletterSection from "../components/home/NewsletterSection";
 import { fetchFeaturedProducts, fetchNewArrivals, fetchCategories } from "../lib/api";
 
 export const metadata = {
@@ -38,10 +40,14 @@ export default async function HomePage() {
   return (
     <>
       <HeroSection />
-      <AutoSwiper /> {/* <-- automatic khadi-style swiper */}
+      <div className="py-10">
+        <ValuePropsStrip />
+      </div>
+      <AutoSwiper />
       <FeaturedCollections categories={categories} />
       <ProductCarousel title="Featured Products" products={featured} />
       <ProductCarousel title="New arrivals" products={newArrivals} />
+      <NewsletterSection />
     </>
   );
 }
