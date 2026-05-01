@@ -28,6 +28,12 @@ function ProductListContainerInner({ initialProducts, initialTotal, initialFabri
     let cancelled = false;
     setLoading(true);
 
+    // Safety: if the request hangs on some devices/networks,
+    // don't leave a full-screen overlay blocking taps forever.
+    const loadingTimeout = setTimeout(() => {
+      if (!cancelled) setLoading(false);
+    }, 12000);
+
     fetchProducts(params)
       .then((res) => {
         if (cancelled) return;
@@ -37,10 +43,14 @@ function ProductListContainerInner({ initialProducts, initialTotal, initialFabri
       })
       .catch(console.error)
       .finally(() => {
+        clearTimeout(loadingTimeout);
         if (!cancelled) setLoading(false);
       });
 
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+      clearTimeout(loadingTimeout);
+    };
   }, [searchParams.toString()]);
 
   return (
@@ -65,7 +75,10 @@ function ProductListContainerInner({ initialProducts, initialTotal, initialFabri
         {/* Grid Container */}
         <div className="w-full relative">
           {loading && (
-            <div className="absolute inset-0 bg-white/60 backdrop-blur-sm z-10 flex items-center justify-center rounded-2xl">
+            <div
+              className="pointer-events-none absolute inset-0 bg-white/60 backdrop-blur-sm z-10 flex items-center justify-center rounded-2xl"
+              aria-hidden="true"
+            >
               <div className="w-6 h-6 border-2 border-black border-t-transparent rounded-full animate-spin" />
             </div>
           )}
