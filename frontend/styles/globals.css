@@ -2,6 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Mobile viewport fix */
+html, body {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
 html {
   -webkit-text-size-adjust: 100%;
   -moz-text-size-adjust: 100%;
@@ -12,14 +21,12 @@ html {
 body {
   @apply bg-white text-gray-900 antialiased;
   overscroll-behavior-y: none;
-}
-
-a {
-  @apply text-gray-900;
+  min-height: 100vh;
+  min-height: 100dvh;
 }
 
 /* Ensure touch targets work on mobile */
-button, a, [role="button"] {
+button, a, [role="button"], input, select, textarea {
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
 }
@@ -30,6 +37,16 @@ button, a, [role="button"] {
     padding-left: env(safe-area-inset-left);
     padding-right: env(safe-area-inset-right);
   }
+}
+
+/* Remove any fixed widths that might break mobile */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+img, video, canvas, svg {
+  max-width: 100%;
+  height: auto;
 }
 
 .scrollbar-hide::-webkit-scrollbar {
