@@ -5,7 +5,7 @@ import { useToastStore } from "@/store/toastStore";
 import { Loader2 } from 'lucide-react';
 import { API_BASE_URL } from '@/lib/config';
 
-export default function ContactForm({ contactPhone = '923141988998' }) {
+export default function ContactForm({ contactPhone = '923098730221' }) {
   const [formData, setFormData] = useState({ name: '', email: '', message: '' });
   const [loading, setLoading] = useState(false);
   const { showToast } = useToastStore();

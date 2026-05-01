@@ -13,7 +13,7 @@ export default function AddToCartSection({ product }) {
   const [selectedSize, setSelectedSize] = useState(null);
   const [selectedColor, setSelectedColor] = useState(null);
   const [showSizeChart, setShowSizeChart] = useState(false);
-  const [contactPhone, setContactPhone] = useState('923141988998');
+  const [contactPhone, setContactPhone] = useState('923098730221');
   const { showToast } = useToastStore();
 
   useEffect(() => {

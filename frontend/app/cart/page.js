@@ -14,7 +14,7 @@ export default function CartPage() {
   const cartItems = useCartStore((state) => state.cart || []);
   const removeItem = useCartStore((state) => state.removeItem);
   const updateQuantity = useCartStore((state) => state.updateQuantity);
-  const [contactPhone, setContactPhone] = useState('923141988998');
+  const [contactPhone, setContactPhone] = useState('923098730221');
 
   useEffect(() => {
     fetchPublicSettings()

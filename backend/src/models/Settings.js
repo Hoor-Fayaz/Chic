@@ -44,11 +44,11 @@ const settingsSchema = new mongoose.Schema({
   },
   footerAbout: { type: String },
   // Global brand & contact settings
-  contactPhone: { type: String, default: '923141988998' },
-  contactEmail: { type: String, default: 'support@jannahchic.com' },
-  legalEmail: { type: String, default: 'legal@jannahchic.com' },
-  privacyEmail: { type: String, default: 'privacy@jannahchic.com' },
-  talentEmail: { type: String, default: 'talent@jannahchic.com' },
+  contactPhone: { type: String, default: '923098730221' },
+  contactEmail: { type: String, default: 'support@jannah.com' },
+  legalEmail: { type: String, default: 'legal@jannah.com' },
+  privacyEmail: { type: String, default: 'privacy@jannah.com' },
+  talentEmail: { type: String, default: 'talent@jannah.com' },
   storeAddress: { type: String, default: 'DHA Phase 6, Pakistan' },
   instagramUrl: { type: String, default: 'https://www.instagram.com/jannah_chic?igsh=MW56bG9lNzJudWRrMg==' },
   checkout: {

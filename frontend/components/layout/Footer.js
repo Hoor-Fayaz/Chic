@@ -7,7 +7,7 @@ import { fetchPublicSettings } from "@/lib/api";
 
 export default function Footer() {
   const [brand, setBrand] = useState({
-    contactPhone: '923141988998',
+    contactPhone: '923098730221',
     instagramUrl: 'https://www.instagram.com/jannah_chic?igsh=MW56bG9lNzJudWRrMg==',
   });
 
@@ -16,7 +16,7 @@ export default function Footer() {
       .then(res => {
         if (res?.data) {
           setBrand({
-            contactPhone: res.data.contactPhone || '923141988998',
+            contactPhone: res.data.contactPhone || '923098730221',
             instagramUrl: res.data.instagramUrl || 'https://www.instagram.com/jannah_chic?igsh=MW56bG9lNzJudWRrMg==',
           });
         }

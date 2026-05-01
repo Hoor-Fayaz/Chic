@@ -33,8 +33,8 @@ export default async function ContactPage() {
   }
 
   const brand = {
-    contactPhone: settings?.contactPhone || '923141988998',
-    contactEmail: settings?.contactEmail || 'support@jannahchic.com',
+    contactPhone: settings?.contactPhone || '923098730221',
+    contactEmail: settings?.contactEmail || 'support@jannah.com',
     storeAddress: settings?.storeAddress || 'DHA Phase 6, Pakistan',
   };
 

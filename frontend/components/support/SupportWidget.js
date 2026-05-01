@@ -9,7 +9,7 @@ export default function SupportWidget() {
   const [inputValue, setInputValue] = useState("");
   const endOfMessagesRef = useRef(null);
   const [isTyping, setIsTyping] = useState(false);
-  const [contactPhone, setContactPhone] = useState('923141988998');
+  const [contactPhone, setContactPhone] = useState('923098730221');
 
   useEffect(() => {
     fetchPublicSettings()
