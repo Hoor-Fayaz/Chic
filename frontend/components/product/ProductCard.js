@@ -130,12 +130,12 @@ export default function ProductCard({ product, showRemove = false, onRemove = nu
         
         <div className="flex items-center justify-center md:justify-start gap-2.5">
           <span className="text-[15px] font-bold text-gray-900">
-            Rs. {product.price?.toLocaleString()}
+            PKR {product.price?.toLocaleString()}
           </span>
           {product.originalPrice && product.originalPrice > product.price && (
             <div className="flex items-center gap-2">
               <span className="text-[12px] text-gray-400 line-through">
-                Rs. {product.originalPrice.toLocaleString()}
+                PKR {product.originalPrice.toLocaleString()}
               </span>
               <span className="text-[10px] font-bold text-red-500 px-1.5 py-0.5 bg-red-50 rounded-full">
                 -{product.discountPercent}%

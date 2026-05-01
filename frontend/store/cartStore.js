@@ -14,18 +14,31 @@ export const useCartStore = create(
 
           if (existsIndex > -1) {
             const newCart = [...state.cart];
-            newCart[existsIndex].quantity += quantity;
+            newCart[existsIndex] = {
+              ...newCart[existsIndex],
+              quantity: newCart[existsIndex].quantity + quantity
+            };
             return { cart: newCart };
           }
 
+          const cartItemId = `${product._id}-${size}-${color}-${Date.now()}`;
           return {
-            cart: [...state.cart, { product, quantity, size, color, price: product.price }],
+            cart: [...state.cart, { cartItemId, product, quantity, size, color, price: product.price }],
           };
         }),
 
-      removeItem: (index) =>
+      removeItem: (cartItemId) =>
         set((state) => ({
-          cart: state.cart.filter((_, i) => i !== index),
+          cart: state.cart.filter((item) => item.cartItemId !== cartItemId),
+        })),
+
+      updateQuantity: (cartItemId, quantity) =>
+        set((state) => ({
+          cart: state.cart.map((item) => 
+            item.cartItemId === cartItemId 
+              ? { ...item, quantity: Math.max(1, quantity) } 
+              : item
+          ),
         })),
 
       clearCart: () => set({ cart: [] }),

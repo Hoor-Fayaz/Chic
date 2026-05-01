@@ -10,7 +10,8 @@ import {
   HiOutlineHeart, 
   HiOutlineMenu, 
   HiOutlineX,
-  HiOutlineSearch 
+  HiOutlineSearch,
+  HiOutlineHome
 } from "react-icons/hi";
 import { useAuthStore } from "@/store/authStore";
 import { logoutUser } from "@/lib/api";
@@ -25,23 +26,18 @@ const staticItems = [
 
 const saleItem = { href: "/sale", label: "Sale" };
 
+
 export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
 
-  const user = useAuthStore((state) => state.user);
-  const logout = useAuthStore((state) => state.logout);
-
   const wishlist = useWishlistStore((state) => state.wishlist);
   const cart = useCartStore((state) => state.cart || []);
-
   const cartCount = cart.reduce((total, item) => total + (item.quantity || 0), 0);
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [expandedMobileItem, setExpandedMobileItem] = useState(null);
-  
   const [dynamicNavItems, setDynamicNavItems] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -114,58 +110,39 @@ export default function Navbar() {
     router.push("/");
   };
 
+
   return (
     <>
-      <header className="sticky top-0 z-40 border-b border-gray-200 bg-white/90 backdrop-blur-md">
-        <div className="mx-auto flex max-w-[1600px] items-center justify-between px-4 py-4 lg:px-12">
-          
-          <div className="flex items-center gap-4">
-            {/* Mobile Hamburger Icon */}
-            <button 
-              className="block md:hidden -ml-2 p-3 text-gray-700 hover:text-black active:scale-95 transition-transform"
-              onClick={() => setMobileMenuOpen(true)}
-              aria-label="Open menu"
-            >
-              <HiOutlineMenu className="h-6 w-6" />
-            </button>
+      {/* Top branding for mobile only */}
+      <div className="md:hidden sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-gray-200 flex justify-center items-center h-14">
+        <span className="text-lg font-display tracking-[0.35em] uppercase text-gray-900 leading-none">Jannah</span>
+      </div>
 
+      {/* Desktop Navbar */}
+      <header className="hidden md:block sticky top-0 z-40 border-b border-gray-200 bg-white/90 backdrop-blur-md">
+        <div className="mx-auto flex max-w-[1600px] items-center justify-between px-4 py-4 lg:px-12">
+          <div className="flex items-center gap-4">
             <Link href="/" className="flex items-center gap-3">
-              <Image 
-                src="/logoo.png" 
-                alt="Logo" 
-                width={64}
-                height={64}
-                priority
-                className="h-12 md:h-16 w-auto object-contain" 
-              />
-              <span className="text-lg md:text-xl font-display tracking-[0.35em] uppercase text-gray-900 leading-none">
-                Jannah Chic
+              <span className="text-xl font-display tracking-[0.35em] uppercase text-gray-900 leading-none">
+                Jannah
               </span>
             </Link>
           </div>
-
-          {/* Desktop Nav */}
-          <nav className="hidden items-center gap-8 text-sm font-medium text-gray-700 md:flex">
+          <nav className="items-center gap-8 text-sm font-medium text-gray-700 flex">
             {navItems.map((item) => {
               const isActive = pathname === item.href;
-              
               return (
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`transition-colors hover:text-black ${
-                    isActive ? "text-black" : "text-gray-600"
-                  }`}
+                  className={`transition-colors hover:text-black ${isActive ? "text-black" : "text-gray-600"}`}
                 >
                   {item.label}
                 </Link>
               );
             })}
           </nav>
-
-          {/* Right Icons */}
           <div className="relative flex items-center gap-4 text-gray-700">
-            {/* Search Toggle */}
             <button 
                 onClick={() => setSearchOpen(true)}
                 className="hover:text-black p-1"
@@ -173,31 +150,57 @@ export default function Navbar() {
             >
                 <HiOutlineSearch className="h-6 w-6" />
             </button>
-
-            {/* Wishlist */}
             <Link href="/wishlist" className="relative hover:text-black">
               <HiOutlineHeart className="h-6 w-6" />
               {wishlist.length > 0 && (
-                <span className="absolute -top-2 -right-2 text-[10px] bg-rose-600 text-white rounded-full h-4 w-4 md:h-5 md:w-5 grid place-items-center">
+                <span className="absolute -top-2 -right-2 text-[10px] bg-rose-600 text-white rounded-full h-5 w-5 grid place-items-center">
                   {wishlist.length}
                 </span>
               )}
             </Link>
-
-            {/* Cart */}
             <Link href="/cart" className="relative hover:text-black">
               <HiOutlineShoppingCart className="h-6 w-6" />
               {cartCount > 0 && (
-                <span className="absolute -top-2 -right-2 text-[10px] bg-red-600 text-white rounded-full h-4 w-4 md:h-5 md:w-5 grid place-items-center font-bold">
+                <span className="absolute -top-2 -right-2 text-[10px] bg-red-600 text-white rounded-full h-5 w-5 grid place-items-center font-bold">
                   {cartCount}
                 </span>
               )}
             </Link>
-
-            {/* Auth Block Removed for WhatsApp Only Flow */}
           </div>
         </div>
       </header>
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 flex justify-around items-center h-16 shadow-t">
+        <Link href="/" className="flex flex-col items-center justify-center text-gray-700 hover:text-black">
+          <HiOutlineHome className="h-6 w-6" />
+          <span className="text-[11px] mt-1">Home</span>
+        </Link>
+        <Link href="/wishlist" className="flex flex-col items-center justify-center relative text-gray-700 hover:text-black">
+          <HiOutlineHeart className="h-6 w-6" />
+          {wishlist.length > 0 && (
+            <span className="absolute -top-1 -right-2 text-[10px] bg-rose-600 text-white rounded-full h-4 w-4 grid place-items-center">
+              {wishlist.length}
+            </span>
+          )}
+          <span className="text-[11px] mt-1">Wishlist</span>
+        </Link>
+        <Link href="/cart" className="flex flex-col items-center justify-center relative text-gray-700 hover:text-black">
+          <HiOutlineShoppingCart className="h-6 w-6" />
+          {cartCount > 0 && (
+            <span className="absolute -top-1 -right-2 text-[10px] bg-red-600 text-white rounded-full h-4 w-4 grid place-items-center font-bold">
+              {cartCount}
+            </span>
+          )}
+          <span className="text-[11px] mt-1">Cart</span>
+        </Link>
+        <button
+          className="flex flex-col items-center justify-center text-gray-700 hover:text-black focus:outline-none"
+          onClick={() => setMobileMenuOpen(true)}
+          aria-label="Open menu"
+        >
+          <HiOutlineMenu className="h-6 w-6" />
+          <span className="text-[11px] mt-1">Menu</span>
+        </button>
+      </nav>
 
       {/* Search Overlay */}
       {searchOpen && (
@@ -275,7 +278,6 @@ export default function Navbar() {
             aria-label="Mobile navigation"
             onClick={(e) => e.stopPropagation()}
           >
-            
             {/* Mobile Menu Header */}
             <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
               <span className="text-[12px] font-display tracking-[0.2em] uppercase font-bold text-gray-900">
@@ -288,7 +290,6 @@ export default function Navbar() {
                 <HiOutlineX size={20} />
               </button>
             </div>
-
             {/* Mobile Nav Links */}
             <div className="flex-1 overflow-y-auto py-4 px-4 space-y-3">
               {/* Mobile Search Bar */}
@@ -301,30 +302,24 @@ export default function Navbar() {
                     className="w-full bg-gray-50 border border-gray-100 rounded-2xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-black transition-all"
                  />
               </form>
-
               {navItems.map((item) => {
                 const isActive = pathname === item.href;
-                
                 return (
                   <Link
                     key={item.href}
                     href={item.href}
                     onClick={() => setMobileMenuOpen(false)}
-                    className={`block py-3 text-sm font-bold uppercase tracking-widest border-b border-gray-50 last:border-0 ${
-                      isActive ? "text-black" : "text-gray-800"
-                    }`}
+                    className={`block py-3 text-sm font-bold uppercase tracking-widest border-b border-gray-50 last:border-0 ${isActive ? "text-black" : "text-gray-800"}`}
                   >
                     {item.label}
                   </Link>
                 );
               })}
             </div>
-
             {/* Mobile Footer Actions (Auth/Logout) */}
             <div className="p-4 border-t border-gray-100 bg-gray-50 space-y-3">
-             {/* Auth Block Removed */}
+              {/* Auth Block Removed */}
             </div>
-
           </div>
         </div>
       )}

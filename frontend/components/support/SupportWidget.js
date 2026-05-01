@@ -22,7 +22,7 @@ export default function SupportWidget() {
     {
       id: 1,
       sender: "bot",
-      text: "Hello! Welcome to Jannah Chic. How can we help you today?",
+      text: "Hello! Welcome to Jannah. How can we help you today?",
       options: [
         { id: "exchange", label: "Exchange Policy" },
         { id: "shipping", label: "Shipping Info" },
@@ -83,7 +83,7 @@ export default function SupportWidget() {
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3 font-sans pointer-events-none">
+    <div className="fixed bottom-20 md:bottom-6 right-6 z-50 flex flex-col items-end gap-3 font-sans pointer-events-none">
       {/* Panel */}
       <div
         className={`transition-all duration-500 ease-in-out origin-bottom-right ${open
@@ -95,10 +95,10 @@ export default function SupportWidget() {
 
           {/* Header */}
           <div className="bg-gray-900 px-6 py-5 text-white shrink-0">
-            <h3 className="text-lg font-display font-bold">Jannah Chic Support</h3>
+            <h3 className="text-lg font-display font-bold">Jannah Support</h3>
             <div className="flex items-center gap-2 mt-2">
               <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
+                <span className="animate-ping [animation-duration:3s] absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-30" />
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500" />
               </span>
               <span className="text-[11px] text-gray-400 font-medium">Chatbot is online</span>
@@ -138,7 +138,7 @@ export default function SupportWidget() {
                     {/* Render WhatsApp Button if flagged */}
                     {msg.isWhatsAppBtn && (
                       <a
-                        href={`https://wa.me/${contactPhone}`}
+                        href={`https://wa.me/${contactPhone.replace(/\D/g, '')}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-flex items-center justify-center gap-2 bg-green-500 text-white text-[12px] font-bold py-2.5 px-5 rounded-full hover:bg-green-600 transition-colors shadow-md mt-1 w-fit"
@@ -213,7 +213,7 @@ export default function SupportWidget() {
 
         {/* Pulse ring when closed */}
         {!open && (
-          <span className="absolute inset-0 rounded-full animate-ping bg-gray-900 opacity-20" />
+          <span className="absolute inset-0 rounded-full animate-ping [animation-duration:3s] bg-gray-400 opacity-30" />
         )}
       </button>
     </div>

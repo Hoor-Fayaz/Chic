@@ -61,8 +61,8 @@ export default function AdminLayout({ children }) {
       <aside className={`fixed inset-y-0 left-0 bg-white border-r border-gray-100 w-72 z-50 transform transition-transform duration-500 ease-in-out md:translate-x-0 md:static flex flex-col ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="p-8 border-b border-gray-50 flex justify-between items-center bg-gray-50/30 font-display">
           <Link href="/admin/dashboard" className="flex items-center gap-3 group">
-            <div className="w-8 h-8 rounded-full bg-black flex items-center justify-center text-white text-[10px] font-bold">JC</div>
-            <span className="text-sm font-bold uppercase tracking-[0.3em] text-gray-900 group-hover:tracking-[0.4em] transition-all duration-500">Jannah Chic</span>
+            <div className="w-8 h-8 rounded-full bg-black flex items-center justify-center text-white text-[10px] font-bold">J</div>
+            <span className="text-sm font-bold uppercase tracking-[0.3em] text-gray-900 group-hover:tracking-[0.4em] transition-all duration-500">Jannah</span>
           </Link>
           <button className="md:hidden p-2 text-gray-400 hover:text-black border border-gray-100 rounded-full" onClick={() => setSidebarOpen(false)}>
             <X size={16} />

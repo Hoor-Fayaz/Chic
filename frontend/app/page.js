@@ -8,11 +8,11 @@ import NewsletterSection from "../components/home/NewsletterSection";
 import { fetchFeaturedProducts, fetchNewArrivals, fetchCategories } from "../lib/api";
 
 export const metadata = {
-  title: "Jannah Chic | Modern Modesty & Premium Textiles",
-  description: "Experience the art of elegance with Jannah Chic. Discover our curated collection of premium Sarees, Frocks, and Unstitched textiles designed for the modern wardrobe.",
+  title: "Jannah | Modern Modesty & Premium Textiles",
+  description: "Experience the art of elegance with Jannah. Discover our curated collection of premium Sarees, Frocks, and Unstitched textiles designed for the modern wardrobe.",
   openGraph: {
-    title: "Jannah Chic | Premium Modest Fashion",
-    description: "Architectural silhouettes and timeless textures. Explore the latest collections from Jannah Chic.",
+    title: "Jannah | Premium Modest Fashion",
+    description: "Architectural silhouettes and timeless textures. Explore the latest collections from Jannah.",
     images: [{ url: "/og-image.jpg" }], // assumed path for brand asset
   },
 };

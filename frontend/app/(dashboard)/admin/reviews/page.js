@@ -43,7 +43,9 @@ export default function AdminReviewsPage() {
   const filteredReviews = reviews.filter(r => 
     r.comment?.toLowerCase().includes(searchTerm.toLowerCase()) || 
     r.product?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    r.user?.firstName?.toLowerCase().includes(searchTerm.toLowerCase())
+    r.user?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    r.guestName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    r.guestEmail?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   if (loading) return (
@@ -104,7 +106,10 @@ export default function AdminReviewsPage() {
                             <tr key={r._id} className="group hover:bg-gray-50/30 transition-all duration-500">
                                 <td className="py-8 px-10">
                                   <div>
-                                      <h3 className="text-xs font-bold text-gray-900 tracking-wider mb-1.5">{r.user?.firstName} {r.user?.lastName}</h3>
+                                      <h3 className="text-xs font-bold text-gray-900 tracking-wider mb-1.5">
+                                          {r.user ? r.user.name : (r.guestName || 'Anonymous')}
+                                          {!r.user && <span className="ml-2 text-[8px] text-cyan-600 font-bold px-1.5 py-0.5 bg-cyan-50 rounded">Guest</span>}
+                                      </h3>
                                       <span className="text-[9px] text-gray-400 font-bold tracking-widest">{new Date(r.createdAt).toLocaleDateString()}</span>
                                   </div>
                                 </td>

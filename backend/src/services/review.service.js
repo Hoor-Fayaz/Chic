@@ -85,7 +85,7 @@ async function getProductReviews(productId, query = {}) {
   const skip = (page - 1) * limit;
 
   const reviews = await Review.find({ product: productId, isApproved: true })
-    .populate('user', 'firstName lastName')
+    .populate('user', 'name')
     .sort({ createdAt: -1 })
     .skip(skip)
     .limit(limit);
@@ -106,7 +106,7 @@ async function getAllReviews(query = {}) {
   const skip = (page - 1) * limit;
 
   const reviews = await Review.find()
-    .populate('user', 'firstName lastName')
+    .populate('user', 'name')
     .populate('product', 'name images sku')
     .sort({ createdAt: -1 })
     .skip(skip)

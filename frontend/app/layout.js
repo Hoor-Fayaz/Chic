@@ -4,7 +4,7 @@ import Toast from '../components/ui/Toast';
 import Shell from '../components/layout/Shell';
 
 export const metadata = {
-  title: 'Chic | Premium Clothing',
+  title: 'Jannah | Premium Clothing',
   description: 'A premium fashion eCommerce experience inspired by modern clothing brands.',
 };
 

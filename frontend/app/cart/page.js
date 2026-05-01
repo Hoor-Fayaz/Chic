@@ -5,21 +5,31 @@ import Link from "next/link";
 import { HiOutlineX } from "react-icons/hi";
 import { useCartStore } from "@/store/cartStore";
 import { useToastStore } from "@/store/toastStore";
+import { fetchPublicSettings } from "@/lib/api";
+import { Minus, Plus, ShoppingBag } from "lucide-react";
 
 export default function CartPage() {
   const [isLoaded, setIsLoaded] = useState(false);
   const { showToast } = useToastStore();
   const cartItems = useCartStore((state) => state.cart || []);
   const removeItem = useCartStore((state) => state.removeItem);
+  const updateQuantity = useCartStore((state) => state.updateQuantity);
+  const [contactPhone, setContactPhone] = useState('923141988998');
+
+  useEffect(() => {
+    fetchPublicSettings()
+      .then(res => { if (res?.data?.contactPhone) setContactPhone(res.data.contactPhone); })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     setIsLoaded(true);
   }, []);
 
-  const handleRemove = (index) => {
+  const handleRemove = (cartItemId) => {
     try {
-      removeItem(index);
-      showToast("Item removed from bag", "info");
+      removeItem(cartItemId);
+      showToast("Item removed from cart", "info");
     } catch (err) {
       console.error("Remove item failed", err);
       showToast("Failed to remove item", "error");
@@ -41,10 +51,10 @@ export default function CartPage() {
   );
 
   const handleWhatsAppCheckout = () => {
-    const phoneNumber = "923141988998";
-    const currentOrigin = 'https://jannahchic.com';
+    const phoneNumber = contactPhone.replace(/\D/g, '');
+    const currentOrigin = typeof window !== 'undefined' ? window.location.origin : 'https://jannah.com';
     
-    let message = `🛍️ *JANNAH CHIC - NEW ORDER INQUIRY*\n\n`;
+    let message = `🛍️ *JANNAH - NEW ORDER INQUIRY*\n\n`;
     message += `Hello team, I would like to place an order for the following items:\n\n`;
     message += `📋 *ORDER DETAILS*\n`;
     message += `------------------------------\n`;
@@ -73,13 +83,13 @@ export default function CartPage() {
     <div className="bg-gray-50">
       <div className="mx-auto max-w-6xl px-4 py-10 lg:px-0">
         <h1 className="mb-6 text-2xl font-display tracking-tight text-gray-900">
-          Shopping Bag
+          Shopping Cart
         </h1>
 
         {items.length === 0 ? (
           <div className="rounded-2xl bg-white p-10 text-center shadow-sm">
             <p className="text-sm text-gray-600">
-              Your bag is empty. Discover something you love.
+              Your cart is empty. Discover something you love.
             </p>
             <Link
               href="/shop"
@@ -100,7 +110,7 @@ export default function CartPage() {
 
                 return (
                   <div
-                    key={`${product?._id}-${index}`}
+                    key={item.cartItemId}
                     className="flex gap-4 rounded-2xl bg-white p-4 shadow-sm"
                   >
                     <div className="h-28 w-24 overflow-hidden rounded-xl bg-gray-100">
@@ -118,7 +128,7 @@ export default function CartPage() {
                     <div className="flex flex-1 flex-col justify-between text-sm">
                       <div className="relative pr-6">
                         <button
-                          onClick={() => handleRemove(index)}
+                          onClick={() => handleRemove(item.cartItemId)}
                           className="absolute -top-1 -right-1 p-1 text-gray-400 hover:text-rose-600 transition-colors"
                           title="Remove item"
                         >
@@ -142,10 +152,24 @@ export default function CartPage() {
                         )}
 
                       </div>
-                      <div className="flex items-center justify-between text-xs text-gray-600">
-                        <span>Qty: {item.quantity}</span>
-                        <span className="font-semibold text-gray-900">
-                          Rs. {(item.price * item.quantity).toLocaleString()}
+                      <div className="flex items-center justify-between mt-auto">
+                        <div className="flex items-center border border-gray-100 rounded-lg overflow-hidden h-9 bg-gray-50">
+                          <button
+                            onClick={() => updateQuantity(item.cartItemId, item.quantity - 1)}
+                            className="w-8 flex justify-center items-center hover:bg-gray-100 transition"
+                          >
+                            <Minus size={12} />
+                          </button>
+                          <span className="w-8 flex justify-center items-center font-bold text-[11px]">{item.quantity}</span>
+                          <button
+                            onClick={() => updateQuantity(item.cartItemId, item.quantity + 1)}
+                            className="w-8 flex justify-center items-center hover:bg-gray-100 transition"
+                          >
+                            <Plus size={12} />
+                          </button>
+                        </div>
+                        <span className="font-bold text-gray-900 text-[13px]">
+                          PKR {(item.price * item.quantity).toLocaleString()}
                         </span>
                       </div>
                     </div>
@@ -161,7 +185,7 @@ export default function CartPage() {
               <div className="space-y-2 text-sm text-gray-700">
                 <div className="flex justify-between">
                   <span>Subtotal</span>
-                  <span>Rs. {subtotal.toLocaleString()}</span>
+                  <span>PKR {subtotal.toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between text-gray-500">
                   <span>Shipping</span>

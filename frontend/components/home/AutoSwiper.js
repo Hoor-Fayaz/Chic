@@ -58,7 +58,7 @@ export default function AutoSwiper() {
               <div className="flex h-full items-center justify-center">
                 <div className="text-center max-w-4xl">
                   <p className="text-[10px] font-bold uppercase tracking-[0.35em] text-white/70">
-                    Jannah Chic
+                    Jannah
                   </p>
                   <h2 className="mt-4 px-2 text-white text-2xl sm:text-5xl lg:text-7xl font-display font-semibold tracking-tight text-center drop-shadow-xl">
                     {slide.title}

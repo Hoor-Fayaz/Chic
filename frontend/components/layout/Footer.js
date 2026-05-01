@@ -36,13 +36,13 @@ export default function Footer() {
               <div className="relative h-10 w-10 grayscale">
                 <Image 
                   src="/logoo.png" 
-                  alt="Jannah Chic" 
+                  alt="Jannah" 
                   fill
                   className="object-contain" 
                 />
               </div>
               <h3 className="text-lg font-display tracking-[0.2em] uppercase text-gray-900 border-l border-gray-100 pl-3">
-                Jannah Chic
+                Jannah
               </h3>
             </Link>
             <p className="text-gray-400 max-w-xs leading-relaxed italic text-[12px]">
@@ -102,7 +102,7 @@ export default function Footer() {
               <FaInstagram />
             </a>
             <a
-              href={`https://wa.me/${brand.contactPhone}`}
+              href={`https://wa.me/${brand.contactPhone.replace(/\D/g, '')}`}
               target="_blank"
               rel="noopener noreferrer"
               aria-label="WhatsApp"
@@ -114,7 +114,7 @@ export default function Footer() {
 
           <div className="flex items-center gap-4">
             <Link href="/auth/login" className="cursor-default border-none outline-none">
-              &copy; {new Date().getFullYear()} Jannah Chic Atelier.
+              &copy; {new Date().getFullYear()} Jannah Atelier.
             </Link>
             <span className="h-1 w-1 bg-gray-200 rounded-full"></span>
             <span className="text-gray-900">Designed for Modest Perfection.</span>

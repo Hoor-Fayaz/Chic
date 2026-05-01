@@ -7,11 +7,11 @@ import RelatedProducts from "@/components/product/RelatedProducts";
 export async function generateMetadata({ params }) {
   try {
     const product = await fetchProductBySlug(params.slug);
-    if (!product) return { title: "Product Not Found | Jannah Chic" };
+    if (!product) return { title: "Product Not Found | Jannah" };
 
     return {
-      title: `${product.name} | Jannah Chic`,
-      description: product.description || `Discover ${product.name} from Jannah Chic's premium collection.`,
+      title: `${product.name} | Jannah`,
+      description: product.description || `Discover ${product.name} from Jannah's premium collection.`,
       openGraph: {
         title: product.name,
         description: product.description,
@@ -19,7 +19,7 @@ export async function generateMetadata({ params }) {
       },
     };
   } catch {
-    return { title: "Jannah Chic" };
+    return { title: "Jannah" };
   }
 }
 

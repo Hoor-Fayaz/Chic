@@ -38,10 +38,10 @@ export default function AddToCartSection({ product }) {
     try {
       setLoading(true);
       useCartStore.getState().addItem(product, quantity, selectedSize, selectedColor);
-      showToast(`${product.name} added to bag!`, "success");
+      showToast(`${product.name} added to cart!`, "success");
     } catch (err) {
       console.error("Add to cart failed", err);
-      showToast("Failed to add to bag. Please try again.", "error");
+      showToast("Failed to add to cart. Please try again.", "error");
     } finally {
       setLoading(false);
     }
@@ -72,9 +72,9 @@ export default function AddToCartSection({ product }) {
     }
 
     const phoneNumber = contactPhone;
-    const currentUrl = `https://jannahchic.com/product/${product.slug}`;
+    const currentUrl = typeof window !== 'undefined' ? `${window.location.origin}/product/${product.slug}` : `https://jannah.com/product/${product.slug}`;
     
-    let message = `🛍️ *JANNAH CHIC - NEW ORDER INQUIRY*\n\n`;
+    let message = `🛍️ *JANNAH - NEW ORDER INQUIRY*\n\n`;
     message += `Hello team, I would like to place an order for the following item:\n\n`;
     message += `📋 *PRODUCT DETAILS*\n`;
     message += `------------------------------\n`;
@@ -87,7 +87,7 @@ export default function AddToCartSection({ product }) {
     message += `------------------------------\n`;
     message += `Please confirm the payment and delivery details! Thank you. ✨`;
     
-    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+    const whatsappUrl = `https://wa.me/${phoneNumber.replace(/\D/g, '')}?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
   };
 
@@ -185,13 +185,13 @@ export default function AddToCartSection({ product }) {
 
       {/* Checkout Actions */}
       <div className="space-y-3 pt-2">
-        {/* Primary Add To Bag */}
+        {/* Primary Add To Cart */}
         <button
           onClick={handleAddToCart}
           disabled={loading}
           className="w-full bg-black text-white py-4 rounded-[1.5rem] font-bold uppercase tracking-[0.2em] text-xs shadow-xl shadow-black/5 hover:bg-gray-900 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 disabled:opacity-50"
         >
-          {loading ? "Adding to Bag..." : "Add to Bag"}
+          {loading ? "Adding to Cart..." : "Add to Cart"}
         </button>
 
         {/* WhatsApp Order */}

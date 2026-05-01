@@ -9,11 +9,11 @@ export async function generateMetadata() {
     const res = await fetchPage("contact");
     const page = res?.data;
     return {
-      title: `${page?.title || "Contact Us"} | Jannah Chic`,
-      description: page?.content?.substring(0, 160) || "Get in touch with Jannah Chic for inquiries or support.",
+      title: `${page?.title || "Contact Us"} | Jannah`,
+      description: page?.content?.substring(0, 160) || "Get in touch with Jannah for inquiries or support.",
     };
   } catch (e) {
-    return { title: "Contact Us | Jannah Chic" };
+    return { title: "Contact Us | Jannah" };
   }
 }
 
@@ -45,7 +45,7 @@ export default async function ContactPage() {
     {
       label: "Live Chat",
       val: "Available on WhatsApp 24/7",
-      link: `https://wa.me/${brand.contactPhone}`,
+      link: `https://wa.me/${brand.contactPhone.replace(/\D/g, '')}`,
       linkText: "Message us"
     },
     {
@@ -57,7 +57,7 @@ export default async function ContactPage() {
     {
       label: "Phone & SMS",
       val: `+${brand.contactPhone}`,
-      link: `tel:+${brand.contactPhone}`,
+      link: `tel:+${brand.contactPhone.replace(/\D/g, '')}`,
       linkText: "Call us"
     },
     {

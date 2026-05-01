@@ -45,7 +45,7 @@ export default function HeroSection() {
         <div className="relative z-10 flex flex-col justify-center space-y-6 sm:space-y-8 animate-in fade-in slide-in-from-left duration-700 lg:pr-8">
           <div className="space-y-2">
             <p className="text-[10px] font-sans font-bold uppercase tracking-[0.4em] text-gray-400">
-                {hero.subtitle || "New Season • Jannah Chic"}
+                {hero.subtitle || "New Season • Jannah"}
             </p>
           </div>
 

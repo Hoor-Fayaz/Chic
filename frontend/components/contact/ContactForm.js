@@ -31,8 +31,8 @@ export default function ContactForm({ contactPhone = '923141988998' }) {
       showToast('Message sent successfully!', 'success');
 
       // 2. Redirect to WhatsApp with dynamic phone number
-      const waMessage = `Hello Jannah Chic,\n\nMy name is ${formData.name} (${formData.email}).\n\n${formData.message}`;
-      const waUrl = `https://wa.me/${contactPhone}?text=${encodeURIComponent(waMessage)}`;
+      const waMessage = `Hello Jannah,\n\nMy name is ${formData.name} (${formData.email}).\n\n${formData.message}`;
+      const waUrl = `https://wa.me/${contactPhone.replace(/\D/g, '')}?text=${encodeURIComponent(waMessage)}`;
       
       window.open(waUrl, '_blank');
 
