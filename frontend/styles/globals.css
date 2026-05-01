@@ -3,24 +3,20 @@
 @tailwind utilities;
 
 /* Mobile viewport fix */
-html, body {
+html {
+  overflow-x: hidden;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
   width: 100%;
   min-width: 0;
   max-width: 100%;
-  overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
-}
-
-html {
-  -webkit-text-size-adjust: 100%;
-  -moz-text-size-adjust: 100%;
-  -ms-text-size-adjust: 100%;
-  text-size-adjust: 100%;
 }
 
 body {
   @apply bg-white text-gray-900 antialiased;
-  overscroll-behavior-y: none;
   min-height: 100vh;
   min-height: 100dvh;
 }
