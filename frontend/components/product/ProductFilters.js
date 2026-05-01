@@ -4,7 +4,7 @@ import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { ChevronDown, ChevronUp, RotateCcw } from 'lucide-react';
 
-export default function ProductFilters({ categories = [], availableFabrics = [] }) {
+export default function ProductFilters({ categories = [], availableFabrics = [], availableSizes = [], availableColors = [] }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
@@ -15,11 +15,13 @@ export default function ProductFilters({ categories = [], availableFabrics = [] 
   const [maxPrice, setMaxPrice] = useState(searchParams.get('maxPrice') || '');
   const [selectedSizes, setSelectedSizes] = useState(searchParams.get('sizes')?.split(',') || []);
   const [selectedFabrics, setSelectedFabrics] = useState(searchParams.get('fabrics')?.split(',') || []);
+  const [selectedColors, setSelectedColors] = useState(searchParams.get('colors')?.split(',') || []);
 
   const [expanded, setExpanded] = useState({
     categories: true,
     price: true,
     size: true,
+    color: true,
     fabric: false
   });
 
@@ -30,6 +32,7 @@ export default function ProductFilters({ categories = [], availableFabrics = [] 
     setMaxPrice(searchParams.get('maxPrice') || '');
     setSelectedSizes(searchParams.get('sizes')?.split(',').filter(Boolean) || []);
     setSelectedFabrics(searchParams.get('fabrics')?.split(',').filter(Boolean) || []);
+    setSelectedColors(searchParams.get('colors')?.split(',').filter(Boolean) || []);
   }, [searchParams.toString()]);
 
   const updateQuery = (next) => {
@@ -58,6 +61,13 @@ export default function ProductFilters({ categories = [], availableFabrics = [] 
       ? selectedFabrics.filter(f => f !== fabric)
       : [...selectedFabrics, fabric];
     updateQuery({ fabrics: next });
+  };
+
+  const toggleColor = (color) => {
+    const next = selectedColors.includes(color)
+      ? selectedColors.filter(c => c !== color)
+      : [...selectedColors, color];
+    updateQuery({ colors: next });
   };
 
   const clearAll = () => {
@@ -167,32 +177,65 @@ export default function ProductFilters({ categories = [], availableFabrics = [] 
       </div>
 
       {/* Sizes */}
-      <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-50">
-        <button 
-            onClick={() => toggleSection('size')}
-            className="flex w-full items-center justify-between mb-4"
-        >
-            <h3 className="text-[11px] font-bold uppercase tracking-widest text-gray-900">Size</h3>
-            {expanded.size ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-        </button>
-        {expanded.size && (
-            <div className="flex flex-wrap gap-2">
-                {['XS', 'S', 'M', 'L', 'XL', 'XXL'].map(size => (
-                    <button
-                        key={size}
-                        onClick={() => toggleSize(size)}
-                        className={`w-10 h-10 rounded-xl text-[10px] font-bold transition-all border ${
-                            selectedSizes.includes(size)
-                            ? 'bg-black text-white border-black shadow-lg shadow-black/10'
-                            : 'bg-white text-gray-500 border-gray-100 hover:border-black'
-                        }`}
-                    >
-                        {size}
-                    </button>
-                ))}
-            </div>
-        )}
-      </div>
+      {availableSizes.length > 0 && (
+        <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-50">
+            <button 
+                onClick={() => toggleSection('size')}
+                className="flex w-full items-center justify-between mb-4"
+            >
+                <h3 className="text-[11px] font-bold uppercase tracking-widest text-gray-900">Size</h3>
+                {expanded.size ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+            </button>
+            {expanded.size && (
+                <div className="flex flex-wrap gap-2">
+                    {availableSizes.sort().map(size => (
+                        <button
+                            key={size}
+                            onClick={() => toggleSize(size)}
+                            className={`w-10 h-10 rounded-xl text-[10px] font-bold transition-all border ${
+                                selectedSizes.includes(size)
+                                ? 'bg-black text-white border-black shadow-lg shadow-black/10'
+                                : 'bg-white text-gray-500 border-gray-100 hover:border-black'
+                            }`}
+                        >
+                            {size}
+                        </button>
+                    ))}
+                </div>
+            )}
+        </div>
+      )}
+
+      {/* Colors */}
+      {availableColors.length > 0 && (
+        <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-50">
+            <button 
+                onClick={() => toggleSection('color')}
+                className="flex w-full items-center justify-between mb-4"
+            >
+                <h3 className="text-[11px] font-bold uppercase tracking-widest text-gray-900">Color</h3>
+                {expanded.color ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+            </button>
+            {expanded.color && (
+                <div className="flex flex-wrap gap-2">
+                    {availableColors.sort().map(color => (
+                        <button
+                            key={color}
+                            onClick={() => toggleColor(color)}
+                            title={color}
+                            className={`px-3 py-2 rounded-xl text-[10px] font-bold uppercase tracking-tighter transition-all border ${
+                                selectedColors.includes(color)
+                                ? 'bg-black text-white border-black shadow-lg shadow-black/10'
+                                : 'bg-white text-gray-500 border-gray-100 hover:border-black'
+                            }`}
+                        >
+                            {color}
+                        </button>
+                    ))}
+                </div>
+            )}
+        </div>
+      )}
 
       {/* Fabric — dynamically sourced from your live product catalog */}
       {availableFabrics.length > 0 && (

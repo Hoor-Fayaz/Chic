@@ -16,6 +16,8 @@ export default async function ShopPage({ searchParams }) {
   let products = [];
   let total = 0;
   let availableFabrics = [];
+  let availableSizes = [];
+  let availableColors = [];
   let categories = [];
 
   try {
@@ -27,6 +29,8 @@ export default async function ShopPage({ searchParams }) {
     products = productsRes.data?.items || [];
     total = productsRes.data?.total ?? products.length;
     availableFabrics = productsRes.data?.availableFabrics || [];
+    availableSizes = productsRes.data?.availableSizes || [];
+    availableColors = productsRes.data?.availableColors || [];
     categories = categoriesRes.data?.items || [];
   } catch (err) {
     console.error("❌ Failed to load Shop page data:", err.message);
@@ -52,7 +56,14 @@ export default async function ShopPage({ searchParams }) {
         </div>
 
         <div className="w-full">
-          <ProductListContainer products={products} total={total} categories={categories} availableFabrics={availableFabrics} />
+          <ProductListContainer 
+            products={products} 
+            total={total} 
+            categories={categories} 
+            availableFabrics={availableFabrics} 
+            availableSizes={availableSizes}
+            availableColors={availableColors}
+          />
         </div>
       </div>
     </div>

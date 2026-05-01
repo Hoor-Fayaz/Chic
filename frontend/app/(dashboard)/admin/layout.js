@@ -19,23 +19,31 @@ const adminNavItems = [
 
 export default function AdminLayout({ children }) {
   const { user, logout } = useAuthStore();
+  const isHydrated = useAuthStore((s) => s.isHydrated);
   const router = useRouter();
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
-    if (!user || user.role !== 'admin') {
+    if (isHydrated && (!user || user.role !== 'admin')) {
       router.push('/auth/login');
     }
-  }, [user, router]);
+  }, [user, isHydrated, router]);
 
   // Close sidebar on navigation on mobile
   useEffect(() => {
     setSidebarOpen(false);
   }, [pathname]);
 
-  if (!user || user.role !== 'admin') {
-    return <div className="min-h-screen flex items-center justify-center font-display animate-pulse">Loading Admin...</div>;
+  if (!isHydrated || !user || user.role !== 'admin') {
+    return (
+      <div className="min-h-screen flex items-center justify-center font-display bg-gray-50">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-8 h-8 border-2 border-black border-t-transparent rounded-full animate-spin" />
+          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400">Authenticating Admin...</p>
+        </div>
+      </div>
+    );
   }
 
   return (

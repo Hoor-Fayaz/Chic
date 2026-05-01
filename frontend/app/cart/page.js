@@ -54,7 +54,7 @@ export default function CartPage() {
     const phoneNumber = contactPhone.replace(/\D/g, '');
     const currentOrigin = typeof window !== 'undefined' ? window.location.origin : 'https://jannah.com';
     
-    let message = `🛍️ *JANNAH - NEW ORDER INQUIRY*\n\n`;
+    let message = `🌟 *JANNAH - NEW ORDER INQUIRY*\n\n`;
     message += `Hello team, I would like to place an order for the following items:\n\n`;
     message += `📋 *ORDER DETAILS*\n`;
     message += `------------------------------\n`;

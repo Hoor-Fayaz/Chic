@@ -144,6 +144,28 @@ export default function ProductCard({ product, showRemove = false, onRemove = nu
           )}
         </div>
 
+        {/* Dynamic Size & Color Swatches for the Gallery */}
+        <div className="flex flex-col gap-2 pt-1">
+            {product.sizes?.length > 0 && (
+                <div className="flex flex-wrap gap-1 justify-center md:justify-start">
+                    {product.sizes.slice(0, 5).map(s => (
+                        <span key={s} className="text-[8px] font-bold px-1.5 py-0.5 bg-gray-50 border border-gray-100 rounded text-gray-400 uppercase">
+                            {s}
+                        </span>
+                    ))}
+                    {product.sizes.length > 5 && <span className="text-[8px] text-gray-300">+{product.sizes.length - 5}</span>}
+                </div>
+            )}
+            {product.colors?.length > 0 && (
+                <div className="flex flex-wrap gap-1 justify-center md:justify-start">
+                    {product.colors.slice(0, 4).map(c => (
+                        <div key={c} title={c} className="w-2 h-2 rounded-full border border-gray-200 bg-gray-100" />
+                    ))}
+                    {product.colors.length > 4 && <span className="text-[8px] text-gray-300">+{product.colors.length - 4}</span>}
+                </div>
+            )}
+        </div>
+
         {product.ratingCount > 0 && (
           <div className="mt-1 flex justify-center md:justify-start">
             <ReviewStars rating={product.ratingAverage} count={product.ratingCount} size={10} />

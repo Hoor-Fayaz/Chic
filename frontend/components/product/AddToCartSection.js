@@ -74,7 +74,7 @@ export default function AddToCartSection({ product }) {
     const phoneNumber = contactPhone;
     const currentUrl = typeof window !== 'undefined' ? `${window.location.origin}/product/${product.slug}` : `https://jannah.com/product/${product.slug}`;
     
-    let message = `🛍️ *JANNAH - NEW ORDER INQUIRY*\n\n`;
+    let message = `🌟 *JANNAH - NEW ORDER INQUIRY*\n\n`;
     message += `Hello team, I would like to place an order for the following item:\n\n`;
     message += `📋 *PRODUCT DETAILS*\n`;
     message += `------------------------------\n`;
@@ -126,23 +126,30 @@ export default function AddToCartSection({ product }) {
       </div>
 
       {/* Sizes */}
-      {product.sizes?.length > 0 && (
-        <div className="space-y-4">
-          <label className="text-[11px] uppercase tracking-widest font-bold text-gray-900 block">Size</label>
-          <div className="flex flex-wrap gap-2">
-            {product.sizes.map((s) => (
-              <button
-                key={s}
-                onClick={() => setSelectedSize(s)}
-                className={`px-4 h-11 border text-[11px] uppercase tracking-tighter font-bold rounded-lg transition-all duration-300 ${selectedSize === s
-                    ? "bg-black text-white border-black"
-                    : "border-gray-200 text-gray-600 hover:border-black"
-                  }`}
-              >
-                {s}
-              </button>
-            ))}
-          </div>
+      {(() => {
+        const availableSizes = product.sizes?.length > 0 
+          ? product.sizes 
+          : product.sizeStock?.map(s => s.size) || [];
+        
+        if (availableSizes.length === 0) return null;
+
+        return (
+          <div className="space-y-4">
+            <label className="text-[11px] uppercase tracking-widest font-bold text-gray-900 block">Size</label>
+            <div className="flex flex-wrap gap-2">
+              {availableSizes.map((s) => (
+                <button
+                  key={s}
+                  onClick={() => setSelectedSize(s)}
+                  className={`px-4 h-11 border text-[11px] uppercase tracking-tighter font-bold rounded-lg transition-all duration-300 ${selectedSize === s
+                      ? "bg-black text-white border-black"
+                      : "border-gray-200 text-gray-600 hover:border-black"
+                    }`}
+                >
+                  {s}
+                </button>
+              ))}
+            </div>
 
           {/* Size Guide Button */}
           <button
@@ -153,7 +160,8 @@ export default function AddToCartSection({ product }) {
             Size Guide
           </button>
         </div>
-      )}
+      );
+    })()}
 
       {/* Colors */}
       {product.colors?.length > 0 && (

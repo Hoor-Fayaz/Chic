@@ -14,6 +14,7 @@ async function listProducts(query) {
     maxPrice,
     sizes,
     fabrics,
+    colors,
   } = query;
 
   const filter = { status: 'active' };
@@ -73,6 +74,11 @@ async function listProducts(query) {
     filter.fabric = { $in: fabricArr };
   }
 
+  if (colors) {
+    const colorArr = Array.isArray(colors) ? colors : String(colors).split(',');
+    filter.colors = { $in: colorArr };
+  }
+
   if (isFeatured === 'true') filter.isFeatured = true;
   if (isNewArrival === 'true') filter.isNewArrival = true;
   if (isOnSale === 'true') filter.isOnSale = true;
@@ -86,14 +92,16 @@ async function listProducts(query) {
   const limitNum = Number(limit) || 12;
   const skip = (pageNum - 1) * limitNum;
 
-  const [items, total, uniqueFabrics] = await Promise.all([
+  const [items, total, uniqueFabrics, uniqueSizes, uniqueColors] = await Promise.all([
     Product.find(filter)
       .populate('category', 'name slug')
       .sort(sortOption)
       .skip(skip)
       .limit(limitNum),
     Product.countDocuments(filter),
-    Product.distinct('fabric', { status: 'active', fabric: { $ne: null, $ne: '' } })
+    Product.distinct('fabric', { status: 'active', fabric: { $ne: null, $ne: '' } }),
+    Product.distinct('sizes', { status: 'active' }),
+    Product.distinct('colors', { status: 'active' })
   ]);
 
   return {
@@ -103,6 +111,8 @@ async function listProducts(query) {
     limit: limitNum,
     totalPages: Math.ceil(total / limitNum) || 1,
     availableFabrics: uniqueFabrics || [],
+    availableSizes: uniqueSizes || [],
+    availableColors: uniqueColors || [],
   };
 }
 

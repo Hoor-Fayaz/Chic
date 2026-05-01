@@ -7,12 +7,14 @@ import ProductGrid from "./ProductGrid";
 import ProductFilters from "./ProductFilters";
 import { fetchProducts } from "@/lib/api";
 
-function ProductListContainerInner({ initialProducts, initialTotal, initialFabrics, categories }) {
+function ProductListContainerInner({ initialProducts, initialTotal, initialFabrics, initialSizes, initialColors, categories }) {
   const searchParams = useSearchParams();
 
   const [products, setProducts] = useState(initialProducts);
   const [total, setTotal] = useState(initialTotal);
   const [availableFabrics, setAvailableFabrics] = useState(initialFabrics);
+  const [availableSizes, setAvailableSizes] = useState(initialSizes || []);
+  const [availableColors, setAvailableColors] = useState(initialColors || []);
   const [loading, setLoading] = useState(false);
 
   const [cols, setCols] = useState(4);
@@ -40,6 +42,8 @@ function ProductListContainerInner({ initialProducts, initialTotal, initialFabri
         setProducts(res.data?.items || []);
         setTotal(res.data?.total ?? 0);
         setAvailableFabrics(res.data?.availableFabrics || []);
+        setAvailableSizes(res.data?.availableSizes || []);
+        setAvailableColors(res.data?.availableColors || []);
       })
       .catch(console.error)
       .finally(() => {
@@ -68,7 +72,12 @@ function ProductListContainerInner({ initialProducts, initialTotal, initialFabri
         {/* Filter Sidebar */}
         {showFilters && (
           <div className="animate-in fade-in slide-in-from-left-4 duration-300">
-            <ProductFilters categories={categories} availableFabrics={availableFabrics} />
+            <ProductFilters 
+              categories={categories} 
+              availableFabrics={availableFabrics} 
+              availableSizes={availableSizes}
+              availableColors={availableColors}
+            />
           </div>
         )}
 
@@ -89,7 +98,14 @@ function ProductListContainerInner({ initialProducts, initialTotal, initialFabri
   );
 }
 
-export default function ProductListContainer({ products = [], total = 0, categories = [], availableFabrics = [] }) {
+export default function ProductListContainer({ 
+  products = [], 
+  total = 0, 
+  categories = [], 
+  availableFabrics = [],
+  availableSizes = [],
+  availableColors = []
+}) {
   return (
     <Suspense fallback={
       <div className="w-full flex justify-center py-20">
@@ -100,6 +116,8 @@ export default function ProductListContainer({ products = [], total = 0, categor
         initialProducts={products}
         initialTotal={total}
         initialFabrics={availableFabrics}
+        initialSizes={availableSizes}
+        initialColors={availableColors}
         categories={categories}
       />
     </Suspense>
