@@ -47,7 +47,7 @@ export default function AdminLayout({ children }) {
   }
 
   return (
-    <div className="flex min-h-screen bg-[#fcfcfc] relative font-sans">
+    <div className="flex flex-col md:flex-row min-h-screen bg-[#fcfcfc] relative font-sans overflow-x-hidden">
       
       {/* Mobile Top Bar */}
       <div className="md:hidden flex items-center justify-between bg-white/80 backdrop-blur-md p-5 shadow-sm w-full fixed top-0 z-40 border-b border-gray-100 font-display">
@@ -66,8 +66,8 @@ export default function AdminLayout({ children }) {
       )}
 
       {/* Sidebar */}
-      <aside className={`fixed inset-y-0 left-0 bg-white border-r border-gray-100 w-72 z-50 transform transition-transform duration-500 ease-in-out md:translate-x-0 md:static flex flex-col ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-        <div className="p-8 border-b border-gray-50 flex justify-between items-center bg-gray-50/30 font-display">
+      <aside className={`fixed inset-y-0 left-0 bg-white border-r border-gray-100 w-72 z-50 transform transition-transform duration-500 ease-in-out md:translate-x-0 md:static flex flex-col h-screen md:h-auto ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+        <div className="p-8 border-b border-gray-50 flex justify-between items-center bg-gray-50/30 font-display shrink-0">
           <Link href="/admin/dashboard" className="flex items-center gap-3 group">
             <div className="w-8 h-8 rounded-full bg-black flex items-center justify-center text-white text-[10px] font-bold">J</div>
             <span className="text-sm font-bold uppercase tracking-[0.3em] text-gray-900 group-hover:tracking-[0.4em] transition-all duration-500">Jannah</span>
@@ -108,7 +108,7 @@ export default function AdminLayout({ children }) {
           </div>
         </nav>
         
-        <div className="p-6 m-4 mt-auto bg-gray-50 rounded-[2rem] border border-gray-100">
+        <div className="p-6 m-4 mt-auto bg-gray-50 rounded-[2rem] border border-gray-100 shrink-0">
           <div className="mb-6 px-2 flex items-center gap-4">
             <div className="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center text-xs font-bold font-display border border-gray-100">
                {user.name?.charAt(0)}
@@ -131,7 +131,7 @@ export default function AdminLayout({ children }) {
       </aside>
 
       {/* Main content */}
-      <main className="flex-1 p-6 md:p-12 pt-24 md:pt-12 w-full max-w-full overflow-x-hidden min-h-screen">
+      <main className="flex-1 p-6 md:p-12 pt-24 md:pt-12 w-full max-w-full overflow-x-hidden min-h-screen md:min-h-0">
         {children}
       </main>
     </div>
