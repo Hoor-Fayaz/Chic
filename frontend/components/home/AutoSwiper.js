@@ -41,7 +41,7 @@ export default function AutoSwiper() {
           <div
             key={i}
             className={`absolute inset-0 transition-opacity duration-700 ${
-              i === current ? "opacity-100 z-10" : "opacity-0 z-0"
+              i === current ? "opacity-100 z-10" : "opacity-0 z-0 pointer-events-none"
             }`}
           >
             <div

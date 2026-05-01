@@ -22,8 +22,8 @@ export default function NewsletterSection() {
   return (
     <section className="bg-gray-900 text-white py-24 px-4 overflow-hidden relative">
       {/* Background decorations */}
-      <div className="absolute top-0 left-0 w-96 h-96 bg-white/5 rounded-full -ml-48 -mt-48 blur-3xl" />
-      <div className="absolute bottom-0 right-0 w-96 h-96 bg-white/5 rounded-full -mr-48 -mb-48 blur-3xl" />
+      <div className="pointer-events-none absolute top-0 left-0 w-96 h-96 bg-white/5 rounded-full -ml-48 -mt-48 blur-3xl" />
+      <div className="pointer-events-none absolute bottom-0 right-0 w-96 h-96 bg-white/5 rounded-full -mr-48 -mb-48 blur-3xl" />
 
       <div className="relative max-w-2xl mx-auto text-center space-y-8">
         {/* Label */}

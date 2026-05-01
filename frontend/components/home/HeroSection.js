@@ -82,7 +82,7 @@ export default function HeroSection() {
                 key={i}
                 href={slide.link || "/shop"}
                 className={`absolute inset-0 transition-all duration-700 ease-in-out ${
-                i === current ? "opacity-100 scale-100 z-10" : "opacity-0 scale-110 z-0"
+                i === current ? "opacity-100 scale-100 z-10" : "opacity-0 scale-110 z-0 pointer-events-none"
                 }`}
             >
                 <Image 

@@ -31,6 +31,11 @@ button, a, [role="button"], input, select, textarea {
   -webkit-tap-highlight-color: transparent;
 }
 
+/* Emergency guardrail: decorative layers must never block taps */
+[aria-hidden="true"] {
+  pointer-events: none !important;
+}
+
 /* Fix for mobile viewport issues */
 @supports (padding: env(safe-area-inset-top)) {
   body {

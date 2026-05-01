@@ -67,6 +67,11 @@ export default function ProductCarousel({ title, products = [], loading = false 
             <Swiper
               modules={[Autoplay, Navigation]}
               spaceBetween={16}
+              // On mobile Chrome, Swiper can swallow click events inside slides.
+              // These settings keep swipe behavior but allow taps on links/buttons.
+              preventClicks={false}
+              preventClicksPropagation={false}
+              touchStartPreventDefault={false}
               autoplay={{
                 delay: 1500,
                 disableOnInteraction: false,
