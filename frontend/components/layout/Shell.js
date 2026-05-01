@@ -25,6 +25,7 @@ export default function Shell({ children }) {
     if (!tapDebugEnabled) return;
 
     let lastOutlined = null;
+    let lastOutlinedClickable = null;
     let lastAt = 0;
 
     const handler = (e) => {
@@ -40,21 +41,33 @@ export default function Shell({ children }) {
 
       if (!el) return;
 
-      const tag = el.tagName || '(unknown)';
-      const id = el.id ? `#${el.id}` : '';
-      const cls = typeof el.className === 'string' && el.className.trim()
-        ? `.${el.className.trim().replace(/\s+/g, '.')}`
-        : '';
+      const fmt = (node) => {
+        if (!node) return '(none)';
+        const tag = node.tagName || '(unknown)';
+        const id = node.id ? `#${node.id}` : '';
+        const cls = typeof node.className === 'string' && node.className.trim()
+          ? `.${node.className.trim().replace(/\s+/g, '.')}`
+          : '';
 
-      let extra = '';
-      if (el.getAttribute) {
-        const ariaHidden = el.getAttribute('aria-hidden');
-        const role = el.getAttribute('role');
-        if (ariaHidden != null) extra += ` aria-hidden=${ariaHidden}`;
-        if (role) extra += ` role=${role}`;
-      }
+        let extra = '';
+        if (node.getAttribute) {
+          const ariaHidden = node.getAttribute('aria-hidden');
+          const role = node.getAttribute('role');
+          if (ariaHidden != null) extra += ` aria-hidden=${ariaHidden}`;
+          if (role) extra += ` role=${role}`;
+        }
 
-      setTapDebugText(`${tag}${id}${cls}${extra}`);
+        try {
+          const pe = window.getComputedStyle(node).pointerEvents;
+          if (pe) extra += ` pointer-events=${pe}`;
+        } catch {}
+
+        return `${tag}${id}${cls}${extra}`;
+      };
+
+      const clickable = el.closest?.('a,button,[role="button"]') || null;
+
+      setTapDebugText(`top=${fmt(el)} | clickable=${fmt(clickable)}`);
 
       if (lastOutlined && lastOutlined !== el) {
         lastOutlined.style.outline = '';
@@ -63,6 +76,14 @@ export default function Shell({ children }) {
       el.style.outline = '3px solid rgba(255,0,0,0.9)';
       el.style.outlineOffset = '2px';
       lastOutlined = el;
+
+      if (lastOutlinedClickable && lastOutlinedClickable !== clickable) {
+        lastOutlinedClickable.style.boxShadow = '';
+      }
+      if (clickable) {
+        clickable.style.boxShadow = '0 0 0 4px rgba(0, 255, 255, 0.85)';
+        lastOutlinedClickable = clickable;
+      }
     };
 
     window.addEventListener('pointerdown', handler, { capture: true });
@@ -72,13 +93,16 @@ export default function Shell({ children }) {
         lastOutlined.style.outline = '';
         lastOutlined.style.outlineOffset = '';
       }
+      if (lastOutlinedClickable) {
+        lastOutlinedClickable.style.boxShadow = '';
+      }
     };
   }, [tapDebugEnabled]);
 
   return (
     <>
       {tapDebugEnabled && (
-        <div className="fixed top-0 left-0 right-0 z-[10000] bg-red-600 text-white text-[11px] font-mono px-3 py-2">
+        <div className="pointer-events-none fixed top-0 left-0 right-0 z-[10000] bg-red-600 text-white text-[11px] font-mono px-3 py-2">
           Tap debug: {tapDebugText || '(tap anywhere)'}
         </div>
       )}
