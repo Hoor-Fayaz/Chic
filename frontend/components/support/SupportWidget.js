@@ -86,9 +86,9 @@ export default function SupportWidget() {
     <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3 font-sans pointer-events-none">
       {/* Panel */}
       <div
-        className={`pointer-events-auto transition-all duration-500 ease-in-out origin-bottom-right ${open
+        className={`transition-all duration-500 ease-in-out origin-bottom-right ${open
             ? "opacity-100 scale-100 translate-y-0 pointer-events-auto"
-            : "opacity-0 scale-95 translate-y-4 pointer-events-none"
+            : "opacity-0 scale-95 translate-y-4 pointer-events-none invisible"
           }`}
       >
         <div className="bg-white rounded-[2rem] shadow-2xl shadow-black/15 border border-gray-100 w-80 md:w-[360px] flex flex-col overflow-hidden" style={{ height: '500px', maxHeight: '80vh' }}>

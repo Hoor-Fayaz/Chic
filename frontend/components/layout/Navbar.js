@@ -116,7 +116,7 @@ export default function Navbar() {
 
   return (
     <>
-      <header className="sticky top-0 z-30 border-b border-gray-200 bg-white/90 backdrop-blur-md">
+      <header className="sticky top-0 z-40 border-b border-gray-200 bg-white/90 backdrop-blur-md">
         <div className="mx-auto flex max-w-[1600px] items-center justify-between px-4 py-4 lg:px-12">
           
           <div className="flex items-center gap-4">
@@ -264,12 +264,12 @@ export default function Navbar() {
       {/* Mobile Slide-out Menu */}
       {mobileMenuOpen && (
         <div
-          className="fixed inset-0 z-40 md:hidden bg-black/50 backdrop-blur-sm transition-opacity"
+          className="fixed inset-0 z-50 md:hidden bg-black/50 backdrop-blur-sm transition-opacity"
           onClick={() => setMobileMenuOpen(false)}
           role="presentation"
         >
           <div
-            className="fixed inset-y-0 left-0 z-50 w-[80%] max-w-[300px] bg-white shadow-2xl flex flex-col h-full animate-in slide-in-from-left duration-300"
+            className="fixed inset-y-0 left-0 z-[60] w-[80%] max-w-[300px] bg-white shadow-2xl flex flex-col h-full animate-in slide-in-from-left duration-300"
             role="dialog"
             aria-modal="true"
             aria-label="Mobile navigation"
