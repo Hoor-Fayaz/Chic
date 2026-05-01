@@ -122,7 +122,7 @@ export default function Navbar() {
           <div className="flex items-center gap-4">
             {/* Mobile Hamburger Icon */}
             <button 
-              className="md:hidden -ml-2 p-3 text-gray-700 hover:text-black active:scale-95 transition-transform"
+              className="block md:hidden -ml-2 p-3 text-gray-700 hover:text-black active:scale-95 transition-transform"
               onClick={() => setMobileMenuOpen(true)}
               aria-label="Open menu"
             >
