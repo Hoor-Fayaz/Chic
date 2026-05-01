@@ -8,6 +8,8 @@ export const metadata = {
   description: 'A premium fashion eCommerce experience inspired by modern clothing brands.',
 };
 
+export const viewport = 'width=device-width, initial-scale=1, maximum-scale=1';
+
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
