@@ -83,10 +83,10 @@ export default function SupportWidget() {
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3 font-sans">
+    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3 font-sans pointer-events-none">
       {/* Panel */}
       <div
-        className={`transition-all duration-500 ease-in-out origin-bottom-right ${open
+        className={`pointer-events-auto transition-all duration-500 ease-in-out origin-bottom-right ${open
             ? "opacity-100 scale-100 translate-y-0 pointer-events-auto"
             : "opacity-0 scale-95 translate-y-4 pointer-events-none"
           }`}
@@ -195,7 +195,7 @@ export default function SupportWidget() {
       <button
         onClick={() => setOpen(!open)}
         aria-label="Toggle Chatbot"
-        className={`relative w-14 h-14 rounded-full shadow-2xl shadow-black/25 flex items-center justify-center transition-all duration-300 ${open ? "bg-gray-900 rotate-0" : "bg-gray-900 hover:scale-110"
+        className={`pointer-events-auto relative w-14 h-14 rounded-full shadow-2xl shadow-black/25 flex items-center justify-center transition-all duration-300 ${open ? "bg-gray-900 rotate-0" : "bg-gray-900 hover:scale-110"
           }`}
       >
         <span
