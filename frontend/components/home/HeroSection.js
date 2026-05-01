@@ -63,7 +63,7 @@ export default function HeroSection() {
               className="group relative overflow-hidden rounded-full bg-black px-8 sm:px-10 py-3.5 sm:py-4 text-[10px] font-bold uppercase tracking-widest text-white transition-all shadow-2xl shadow-black/20"
             >
               <span className="relative z-10">Shop Collection</span>
-              <div className="absolute inset-0 bg-gray-800 translate-y-full group-hover:translate-y-0 transition-transform" />
+              <div className="pointer-events-none absolute inset-0 bg-gray-800 translate-y-full group-hover:translate-y-0 transition-transform" />
             </Link>
 
             <Link
@@ -93,7 +93,7 @@ export default function HeroSection() {
                     sizes="(max-width: 1024px) 100vw, 50vw"
                     className="object-cover"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent" />
+                <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/20 via-transparent" />
             </Link>
             ))}
           

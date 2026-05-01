@@ -45,11 +45,14 @@ export default function AutoSwiper() {
             }`}
           >
             <div
-              className="absolute inset-0 bg-cover bg-center"
+              className="pointer-events-none absolute inset-0 bg-cover bg-center"
               style={{ backgroundImage: `url(${slide.imageUrl})` }}
               aria-hidden="true"
             />
-            <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/25 to-black/35" aria-hidden="true" />
+            <div
+              className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/30 via-black/25 to-black/35"
+              aria-hidden="true"
+            />
 
             <div className="relative h-full mx-auto max-w-[1600px] px-4 lg:px-12">
               <div className="flex h-full items-center justify-center">

@@ -63,7 +63,7 @@ export default function FeaturedCollections({ categories: apiCategories = [] }) 
                 alt={item.name}
                 className="h-full w-full object-cover transition-transform duration-1000 group-hover:scale-110"
               />
-              <div className="absolute inset-0 flex items-end bg-gradient-to-t from-black/80 via-black/20 to-transparent p-8 text-white opacity-90 group-hover:opacity-100 transition-opacity">
+              <div className="pointer-events-none absolute inset-0 flex items-end bg-gradient-to-t from-black/80 via-black/20 to-transparent p-8 text-white opacity-90 group-hover:opacity-100 transition-opacity">
                 <div className="translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
                     <span className="text-[10px] uppercase tracking-[0.3em] font-bold opacity-70 mb-1 block">Explore</span>
                     <h3 className="text-2xl font-display font-semibold tracking-tight">{item.name}</h3>
