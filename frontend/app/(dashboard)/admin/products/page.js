@@ -135,7 +135,7 @@ export default function AdminProductsPage() {
                             <tr key={p._id} className="group hover:bg-gray-50/30 transition-all duration-500">
                                 <td className="py-8 px-10">
                                     <div className="flex items-center gap-8">
-                                        <div className="w-16 aspect-[3/4] bg-gray-50 rounded-2xl overflow-hidden shrink-0 border border-gray-100 shadow-sm group-hover:shadow-md transition-all duration-500">
+                                        <div className="w-16 min-w-[4rem] h-[85px] bg-gray-50 rounded-2xl overflow-hidden shrink-0 border border-gray-100 shadow-sm group-hover:shadow-md transition-all duration-500">
                                             <img src={p.images?.[0]?.url || p.images?.[0]} alt="" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 font-display" />
                                         </div>
                                         <div>
