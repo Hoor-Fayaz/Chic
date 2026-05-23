@@ -19,6 +19,9 @@ require('./config/passport');
 
 const app = express();
 
+// Trust proxy for express-rate-limit behind Vercel proxy
+app.set('trust proxy', 1);
+
 // Healthcheck (Top-level for reachability even if DB is connecting)
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', environment: process.env.NODE_ENV });
