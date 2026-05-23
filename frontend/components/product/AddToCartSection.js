@@ -279,37 +279,44 @@ export default function AddToCartSection({ product }) {
               <p className="text-xs uppercase tracking-[0.2em] text-gray-400 font-bold">Standard Boutique Measurements (Inches)</p>
             </div>
 
-            {product.sizeChart ? (
+            {product.sizeChart && (product.sizeChart.startsWith('http') || product.sizeChart.startsWith('/') || /\.(jpeg|jpg|gif|png|webp)/i.test(product.sizeChart)) ? (
               <img src={product.sizeChart} alt="Size Chart" className="w-full h-auto rounded-3xl border border-gray-100" />
             ) : (
-              <div className="border border-gray-100 rounded-3xl p-6 overflow-x-auto">
-                <table className="w-full text-sm text-left min-w-[300px]">
-                  <thead className="text-[10px] uppercase font-bold text-gray-400 border-b">
-                    <tr>
-                      <th className="py-3">Size</th>
-                      <th className="py-3">Chest</th>
-                      <th className="py-3">Waist</th>
-                      <th className="py-3">Shoulder</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-50">
-                    {[
-                      { s: 'XS', c: 18, w: 16, sh: 14 },
-                      { s: 'S', c: 19, w: 17, sh: 14.5 },
-                      { s: 'M', c: 20, w: 18, sh: 15 },
-                      { s: 'L', c: 21, w: 19, sh: 15.5 },
-                      { s: 'XL', c: 22, w: 20, sh: 16 }
-                    ].map(item => (
-                      <tr key={item.s}>
-                        <td className="py-4 font-bold">{item.s}</td>
-                        <td className="py-4 text-gray-600">{item.c}</td>
-                        <td className="py-4 text-gray-600">{item.w}</td>
-                        <td className="py-4 text-gray-600">{item.sh}</td>
+              <div className="space-y-6">
+                {product.sizeChart && (
+                  <div className="bg-gray-50 border border-gray-100 rounded-2xl p-4 text-center">
+                    <p className="text-sm font-semibold text-gray-900 mb-1">Product Details & Dimensions</p>
+                    <p className="text-xs text-gray-600 font-medium">{product.sizeChart}</p>
+                  </div>
+                )}
+                <div className="border border-gray-100 rounded-3xl p-6 overflow-x-auto">
+                  <table className="w-full text-sm text-left min-w-[300px]">
+                    <thead className="text-[10px] uppercase font-bold text-gray-400 border-b">
+                      <tr>
+                        <th className="py-3">Size</th>
+                        <th className="py-3">Chest</th>
+                        <th className="py-3">Waist</th>
+                        <th className="py-3">Shoulder</th>
                       </tr>
-                    ))}
-                  </tbody>
-
-                </table>
+                    </thead>
+                    <tbody className="divide-y divide-gray-50">
+                      {[
+                        { s: 'XS', c: 18, w: 16, sh: 14 },
+                        { s: 'S', c: 19, w: 17, sh: 14.5 },
+                        { s: 'M', c: 20, w: 18, sh: 15 },
+                        { s: 'L', c: 21, w: 19, sh: 15.5 },
+                        { s: 'XL', c: 22, w: 20, sh: 16 }
+                      ].map(item => (
+                        <tr key={item.s}>
+                          <td className="py-4 font-bold">{item.s}</td>
+                          <td className="py-4 text-gray-600">{item.c}</td>
+                          <td className="py-4 text-gray-600">{item.w}</td>
+                          <td className="py-4 text-gray-600">{item.sh}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             )}
 

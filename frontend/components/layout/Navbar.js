@@ -114,7 +114,7 @@ export default function Navbar() {
   return (
     <>
       {/* Top branding for mobile only */}
-      <div className="md:hidden sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-gray-200 flex justify-center items-center h-14">
+      <div className="md:hidden sticky top-0 z-40 bg-white/75 backdrop-blur-md border-b border-gray-200/50 flex justify-center items-center h-14">
         <button 
           onClick={() => setMobileMenuOpen(true)}
           className="text-lg font-bold font-display tracking-[0.35em] uppercase text-gray-900 leading-none focus:outline-none"
@@ -122,9 +122,9 @@ export default function Navbar() {
           Jannah
         </button>
       </div>
-
+ 
       {/* Desktop Navbar */}
-      <header className="hidden md:block sticky top-0 z-40 border-b border-gray-200 bg-white/90 backdrop-blur-md">
+      <header className="hidden md:block sticky top-0 z-40 border-b border-gray-200/50 bg-white/75 backdrop-blur-md">
         <div className="mx-auto flex max-w-[1600px] items-center justify-between px-4 py-4 lg:px-12">
           <div className="flex items-center gap-4">
             <Link href="/" className="flex items-center gap-3">
@@ -174,7 +174,7 @@ export default function Navbar() {
           </div>
         </div>
       </header>
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 flex justify-around items-center h-16 shadow-t">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/75 backdrop-blur-md border-t border-gray-200/50 flex justify-around items-center h-16 shadow-t">
         <Link href="/" className="flex flex-col items-center justify-center text-gray-700 hover:text-black">
           <HiOutlineHome className="h-6 w-6" />
           <span className="text-[11px] mt-1">Home</span>
