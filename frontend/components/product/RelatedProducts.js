@@ -30,7 +30,7 @@ export default function RelatedProducts({ categoryId, currentProductId }) {
         <h3 className="text-xl font-display text-gray-900 mb-8">Other Treasures You May Like</h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 animate-pulse">
             {[1, 2, 3, 4].map(i => (
-                <div key={i} className="aspect-[2/3] bg-gray-100 rounded-[2.5rem]" />
+                <div key={i} className="aspect-[2/3] bg-gray-100 rounded-[1.25rem] md:rounded-[2.5rem]" />
             ))}
         </div>
      </div>

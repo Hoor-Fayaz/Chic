@@ -28,7 +28,7 @@ export default function ProductCard({ product, showRemove = false, onRemove = nu
 
   return (
     <div className="group flex flex-col bg-white overflow-hidden transition-all duration-500">
-      <div className="relative overflow-hidden rounded-[2.5rem] bg-[#f8f8f8] aspect-[4/5] lg:aspect-[2/3]">
+      <div className="relative overflow-hidden rounded-[1.25rem] md:rounded-[2.5rem] bg-[#f8f8f8] aspect-[4/5] lg:aspect-[2/3]">
 
         {/* Wishlist Icon */}
         <button

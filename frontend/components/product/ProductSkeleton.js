@@ -1,7 +1,7 @@
 export default function ProductSkeleton() {
   return (
     <div className="flex flex-col animate-pulse">
-      <div className="relative aspect-[2/3] w-full bg-gray-200 rounded-[2.5rem] overflow-hidden">
+      <div className="relative aspect-[2/3] w-full bg-gray-200 rounded-[1.25rem] md:rounded-[2.5rem] overflow-hidden">
         {/* Shimmer Effect */}
         <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent animate-[shimmer_2s_infinite]" />
       </div>

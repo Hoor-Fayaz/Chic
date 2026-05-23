@@ -21,7 +21,7 @@ export default function ProductGallery({ images = [] }) {
   const swiperRef = useRef(null);
   
   if (!images || images.length === 0) {
-    return <div className="aspect-[2/3] w-full bg-gray-100 rounded-[2.5rem]" />;
+    return <div className="aspect-[2/3] w-full bg-gray-100 rounded-[1.25rem] md:rounded-[2.5rem]" />;
   }
 
   const scrollThumbnails = (direction) => {
@@ -105,7 +105,7 @@ export default function ProductGallery({ images = [] }) {
                 initialSlide={activeIndex}
                 spaceBetween={20}
                 slidesPerView={1}
-                className="w-full rounded-[2.5rem] overflow-hidden bg-[#fdfdfd] border border-gray-100/50 shadow-sm transition-all duration-500"
+                className="w-full rounded-[1.25rem] md:rounded-[2.5rem] overflow-hidden bg-[#fdfdfd] border border-gray-100/50 shadow-sm transition-all duration-500"
             >
                 {images.map((img, idx) => (
                     <SwiperSlide key={idx} className="cursor-zoom-in" onClick={() => setIsFullscreen(true)}>

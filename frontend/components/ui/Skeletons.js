@@ -25,7 +25,7 @@ export function HeroSkeleton() {
 export function CardSkeleton() {
   return (
     <div className="flex flex-col gap-4 animate-pulse">
-      <div className={`aspect-[4/5] lg:aspect-[2/3] bg-gray-100 rounded-[2.5rem] ${shimmer} relative overflow-hidden`} />
+      <div className={`aspect-[4/5] lg:aspect-[2/3] bg-gray-100 rounded-[1.25rem] md:rounded-[2.5rem] ${shimmer} relative overflow-hidden`} />
       <div className="space-y-2 px-2">
         <div className={`h-3 w-20 bg-gray-100 rounded-full ${shimmer} relative overflow-hidden`} />
         <div className={`h-4 w-full bg-gray-50 rounded-md ${shimmer} relative overflow-hidden`} />
