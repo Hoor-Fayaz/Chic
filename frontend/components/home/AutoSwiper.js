@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { fetchPublicSettings } from "@/lib/api";
+import { DEMO_IMAGES } from "@/lib/demoImages";
 
 export default function AutoSwiper() {
   const [current, setCurrent] = useState(0);
@@ -14,12 +15,16 @@ export default function AutoSwiper() {
         if (res.success && res.data?.section2?.slides?.length > 0) {
             setSlides(res.data.section2.slides);
         } else {
-            // Fallback
             setSlides([
-                { imageUrl: "https://picsum.photos/1600/900?random=1", link: "/shop", title: "Summer Sale 2026" },
-                { imageUrl: "https://picsum.photos/1600/900?random=2", link: "/category/new-arrivals", title: "New Arrivals" }
+                { imageUrl: DEMO_IMAGES.sareeBanner, link: "/category/sarees", title: "Silk Saree Collection" },
+                { imageUrl: DEMO_IMAGES.frockBanner, link: "/category/frocks", title: "Festive Frocks" }
             ]);
         }
+    }).catch(() => {
+        setSlides([
+            { imageUrl: DEMO_IMAGES.sareeBanner, link: "/category/sarees", title: "Silk Saree Collection" },
+            { imageUrl: DEMO_IMAGES.frockBanner, link: "/category/frocks", title: "Festive Frocks" }
+        ]);
     }).finally(() => setLoading(false));
   }, []);
 

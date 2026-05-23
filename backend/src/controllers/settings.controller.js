@@ -9,7 +9,15 @@ async function getPublicHomepageSettings(req, res, next) {
         const settings = await getHomepageSettings();
         return success(res, settings, 'Homepage settings retrieved');
     } catch (err) {
-        next(err);
+        console.error('Fallback triggered for public settings:', err.message);
+        // Return minimal default settings so frontend doesn't crash
+        const fallbackSettings = {
+            contactPhone: '923098730221',
+            instagramUrl: 'https://www.instagram.com/jannah_chic',
+            heroSlides: [],
+            announcementBar: 'Welcome to Jannah Chic'
+        };
+        return success(res, fallbackSettings, 'Default settings retrieved (Fallback)');
     }
 }
 

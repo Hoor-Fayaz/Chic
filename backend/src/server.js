@@ -13,14 +13,19 @@ async function startServer() {
     const app = require('./app');
     const server = http.createServer(app);
 
-    // 2. Connect to the database first
-    await connectDB();
-
-    // 3. Start listening after DB is ready
+    // 2. Start listening immediately so frontend doesn't get connection refused
     server.listen(PORT, () => {
       // eslint-disable-next-line no-console
       console.log(`🚀 Backend API server running on port ${PORT}`);
       console.log(`🌐 Accessible at: http://localhost:${PORT}/api/v1`);
+      
+      // 3. Connect to the database in the background
+      connectDB()
+        .then(() => console.log('✅ MongoDB connected successfully'))
+        .catch(err => {
+          console.error('❌ MongoDB connection failed:', err.message);
+          console.log('⚠️ Server is running but database-dependent features will fail.');
+        });
     });
 
     server.on('error', (error) => {

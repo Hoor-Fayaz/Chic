@@ -41,7 +41,7 @@ export default function Footer() {
                   className="object-contain" 
                 />
               </div>
-              <h3 className="text-lg font-display tracking-[0.2em] uppercase text-gray-900 border-l border-gray-100 pl-3">
+              <h3 className="text-lg font-bold font-display tracking-[0.2em] uppercase text-gray-900 border-l border-gray-100 pl-3">
                 Jannah
               </h3>
             </Link>

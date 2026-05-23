@@ -2,7 +2,7 @@
 import Link from "next/link";
 
 const promoBanners = [
-  { img: "https://picsum.photos/400/500", link: "/shop" },
+  { img: "/products/saree-1.png", link: "/category/sarees" },
   { img: "/banners/promo-2.jpg", link: "/category/new-arrivals" },
 ];
 

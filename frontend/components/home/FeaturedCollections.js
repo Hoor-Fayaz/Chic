@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { fetchPublicSettings } from "@/lib/api";
+import { DEMO_IMAGES } from "@/lib/demoImages";
 import { CardGridSkeleton } from "../ui/Skeletons";
 
 export default function FeaturedCollections({ categories: apiCategories = [] }) {
@@ -24,9 +25,10 @@ export default function FeaturedCollections({ categories: apiCategories = [] }) 
             setItems(cmsItems);
             setTitle(res.data.section3.title || "Featured Collections");
         } else {
-            // Fallback to auto categories
             setItems(apiCategories.map(c => ({ ...c, label: c.name })));
         }
+    }).catch(() => {
+        setItems(apiCategories.map(c => ({ ...c, label: c.name })));
     }).finally(() => setLoading(false));
   }, [apiCategories]);
 
@@ -59,7 +61,7 @@ export default function FeaturedCollections({ categories: apiCategories = [] }) 
               className="relative block overflow-hidden rounded-[1.5rem] sm:rounded-[3rem] aspect-[3/4] group shadow-sm hover:shadow-xl transition-all duration-500"
             >
               <img
-                src={item.imageUrl || item.image || "/products/placeholder.png"}
+                src={item.imageUrl || item.image || DEMO_IMAGES.saree}
                 alt={item.name}
                 className="h-full w-full object-cover transition-transform duration-1000 group-hover:scale-110"
               />

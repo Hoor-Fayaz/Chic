@@ -163,20 +163,33 @@ mongoose.connection.on('disconnected', () => {
 });
 
 async function connectDB() {
-  const uri = process.env.MONGODB_URI;
+  const srvUri = process.env.MONGODB_URI;
+  const localUri = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/chic_db';
 
   if (mongoose.connection.readyState === 1) return;
 
   console.log('⏳ Connecting to MongoDB...');
 
-  try {
-    const ok = await tryConnect(uri, 'MongoDB Atlas', 5000);
-    if (!ok) {
-      throw new Error('Connection refused. Please check if your IP is whitelisted (0.0.0.0/0) in MongoDB Atlas.');
-    }
-  } catch (err) {
-    throw err;
+  // 1. Try SRV URI directly
+  let ok = await tryConnect(srvUri, 'MongoDB Atlas (SRV)');
+  if (ok) return;
+
+  // 2. Try building explicit URI (handling DNS issues)
+  console.log('⚠️ SRV connection failed, attempting explicit URI resolution...');
+  const explicitUri = await buildExplicitMongoUri(srvUri);
+  if (explicitUri) {
+    ok = await tryConnect(explicitUri, 'MongoDB Atlas (Explicit)');
+    if (ok) return;
   }
+
+  // 3. Try Local Fallback
+  console.log('⚠️ Atlas connection failed, attempting local fallback...');
+  ok = await tryConnect(localUri, 'Local MongoDB');
+  if (ok) return;
+
+  // 4. If all fail
+  console.error('❌ All MongoDB connection attempts failed.');
+  throw new Error('Unable to connect to any database. Please ensure MongoDB is running or your network allows Atlas connections.');
 }
 
 module.exports = { connectDB };

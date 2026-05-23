@@ -107,7 +107,7 @@ async function getHomepageSettings() {
         settings = await Settings.create({
             key: 'homepage_cms',
             heroSlides: [
-                { imageUrl: 'https://picsum.photos/1200/800?random=b1', title: 'Effortless style for every day.', subtitle: 'New Season • SS\'26', link: '/shop' }
+                { imageUrl: '/products/saree-1.png', title: 'Effortless style for every day.', subtitle: 'New Season • SS\'26', link: '/shop' }
             ]
         });
     }

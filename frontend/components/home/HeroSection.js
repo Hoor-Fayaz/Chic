@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { fetchPublicSettings } from "@/lib/api";
+import { DEMO_IMAGES } from "@/lib/demoImages";
 import { HeroSkeleton } from "../ui/Skeletons";
 
 export default function HeroSection() {
@@ -18,6 +19,7 @@ export default function HeroSection() {
           setSettings(res.data.section1);
         }
       })
+      .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
 
@@ -34,7 +36,7 @@ export default function HeroSection() {
 
   const hero = settings || {};
   const slides = hero.slides?.length > 0 ? hero.slides : [
-      { imageUrl: "https://picsum.photos/1200/800?random=1", link: "/shop" }
+      { imageUrl: DEMO_IMAGES.saree, link: "/category/sarees" }
   ];
 
   return (

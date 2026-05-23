@@ -115,7 +115,12 @@ export default function Navbar() {
     <>
       {/* Top branding for mobile only */}
       <div className="md:hidden sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-gray-200 flex justify-center items-center h-14">
-        <span className="text-lg font-display tracking-[0.35em] uppercase text-gray-900 leading-none">Jannah</span>
+        <button 
+          onClick={() => setMobileMenuOpen(true)}
+          className="text-lg font-bold font-display tracking-[0.35em] uppercase text-gray-900 leading-none focus:outline-none"
+        >
+          Jannah
+        </button>
       </div>
 
       {/* Desktop Navbar */}
@@ -123,7 +128,7 @@ export default function Navbar() {
         <div className="mx-auto flex max-w-[1600px] items-center justify-between px-4 py-4 lg:px-12">
           <div className="flex items-center gap-4">
             <Link href="/" className="flex items-center gap-3">
-              <span className="text-xl font-display tracking-[0.35em] uppercase text-gray-900 leading-none">
+              <span className="text-xl font-bold font-display tracking-[0.35em] uppercase text-gray-900 leading-none">
                 Jannah
               </span>
             </Link>
