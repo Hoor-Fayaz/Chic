@@ -6,6 +6,9 @@ import Shell from '../components/layout/Shell';
 export const metadata = {
   title: 'Jannah | Premium Clothing',
   description: 'A premium fashion eCommerce experience inspired by modern clothing brands.',
+  verification: {
+    google: 'V0zwyN7qNvL6pQjcXa3q2pefod1rmTBifc-I5l_cPCo',
+  },
 };
 
 export const viewport = 'width=device-width, initial-scale=1, maximum-scale=1';
