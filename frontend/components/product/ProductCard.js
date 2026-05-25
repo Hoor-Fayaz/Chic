@@ -43,11 +43,10 @@ export default function ProductCard({ product, showRemove = false, onRemove = nu
             }
             toggle(product);
           }}
-          className="absolute right-4 top-4 z-20 rounded-full bg-white/80 backdrop-blur-md p-2.5 shadow-sm hover:bg-white hover:scale-110 transition-all duration-300"
+          className="absolute right-2 top-2 md:right-4 md:top-4 z-20 rounded-full bg-white/80 backdrop-blur-md p-1.5 md:p-2.5 shadow-sm hover:bg-white hover:scale-110 transition-all duration-300"
         >
           <Heart
-            size={18}
-            className={`transition-colors duration-300 ${
+            className={`w-3.5 h-3.5 md:w-[18px] md:h-[18px] transition-colors duration-300 ${
               liked ? "fill-red-500 text-red-500" : "text-gray-400 group-hover:text-gray-600"
             }`}
           />
@@ -63,21 +62,21 @@ export default function ProductCard({ product, showRemove = false, onRemove = nu
               if (onRemove) onRemove(product);
               else toggle(product);
             }}
-            className="absolute left-4 top-4 z-20 rounded-full bg-white/80 backdrop-blur-md p-2 shadow-sm hover:bg-rose-50 hover:text-rose-600 transition-all font-bold"
+            className="absolute left-2 top-2 md:left-4 md:top-4 z-20 rounded-full bg-white/80 backdrop-blur-md p-1.5 md:p-2 shadow-sm hover:bg-rose-50 hover:text-rose-600 transition-all font-bold"
           >
-            <HiOutlineX size={18} />
+            <HiOutlineX className="w-3.5 h-3.5 md:w-[18px] md:h-[18px]" />
           </button>
         )}
 
         {/* Badges */}
-        <div className="absolute left-4 top-4 z-20 flex flex-col gap-2">
+        <div className="absolute left-2 top-2 md:left-4 md:top-4 z-20 flex flex-col gap-1 md:gap-2">
             {product.isOnSale && product.price < product.originalPrice && (
-                <span className="bg-rose-600 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest shadow-sm">
+                <span className="bg-rose-600 text-white text-[8px] md:text-[10px] font-bold px-2 py-0.5 md:px-3 md:py-1 rounded-full uppercase tracking-widest shadow-sm">
                     Sale {product.discountPercent || Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}%
                 </span>
             )}
             {product.isNewArrival && (
-                <span className="bg-black text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest shadow-sm">
+                <span className="bg-black text-white text-[8px] md:text-[10px] font-bold px-2 py-0.5 md:px-3 md:py-1 rounded-full uppercase tracking-widest shadow-sm">
                     New
                 </span>
             )}
