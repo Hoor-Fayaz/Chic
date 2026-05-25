@@ -7,7 +7,7 @@ import ProductGrid from "./ProductGrid";
 import ProductFilters from "./ProductFilters";
 import { fetchProducts } from "@/lib/api";
 
-function ProductListContainerInner({ initialProducts, initialTotal, initialFabrics, initialSizes, initialColors, categories, defaultCategory }) {
+function ProductListContainerInner({ initialProducts, initialTotal, initialFabrics, initialSizes, initialColors, categories, defaultCategory, defaultLimit }) {
   const searchParams = useSearchParams();
 
   const [products, setProducts] = useState(initialProducts);
@@ -29,6 +29,10 @@ function ProductListContainerInner({ initialProducts, initialTotal, initialFabri
 
     if (defaultCategory && !searchParams.has('category')) {
       params.category = defaultCategory;
+    }
+
+    if (defaultLimit && !searchParams.has('limit')) {
+      params.limit = defaultLimit;
     }
 
     let cancelled = false;
@@ -110,6 +114,7 @@ export default function ProductListContainer({
   availableSizes = [],
   availableColors = [],
   defaultCategory = null,
+  defaultLimit = null,
 }) {
   return (
     <Suspense fallback={
@@ -125,6 +130,7 @@ export default function ProductListContainer({
         initialColors={availableColors}
         categories={categories}
         defaultCategory={defaultCategory}
+        defaultLimit={defaultLimit}
       />
     </Suspense>
   );

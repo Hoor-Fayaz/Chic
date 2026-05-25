@@ -22,7 +22,7 @@ export default async function ShopPage({ searchParams }) {
 
   try {
     const [productsRes, categoriesRes] = await Promise.all([
-      fetchProducts(searchParams),
+      fetchProducts({ ...searchParams, limit: 1000 }),
       fetchCategories(),
     ]);
 
@@ -63,6 +63,7 @@ export default async function ShopPage({ searchParams }) {
             availableFabrics={availableFabrics} 
             availableSizes={availableSizes}
             availableColors={availableColors}
+            defaultLimit={1000}
           />
         </div>
       </div>
