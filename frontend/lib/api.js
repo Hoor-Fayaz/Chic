@@ -24,7 +24,8 @@ export async function apiFetch(path, options = {}) {
       headers,
       body: options.body ? JSON.stringify(options.body) : undefined,
       credentials: typeof window !== "undefined" ? "include" : undefined,
-      cache: "no-store",
+      cache: options.cache || (options.next ? undefined : "no-store"),
+      next: options.next || undefined,
     });
 
     if (!res.ok) {
@@ -71,24 +72,24 @@ export async function toggleWishlistAPI(productId) {
 }
 
 /* ------------------------- Product APIs ------------------------- */
-export async function fetchProducts(params = {}) {
+export async function fetchProducts(params = {}, options = {}) {
   const searchParams = new URLSearchParams(params);
-  return apiFetch(`/products?${searchParams.toString()}`); // keep original
+  return apiFetch(`/products?${searchParams.toString()}`, options); // keep original
 }
 
 export async function fetchFeaturedProducts() {
-  const res = await fetchProducts({ isFeatured: "true", limit: 8 });
+  const res = await fetchProducts({ isFeatured: "true", limit: 8 }, { next: { revalidate: 30 } });
   return res; // keep original
 }
 
 export async function fetchNewArrivals() {
-  const res = await fetchProducts({ isNewArrival: "true", limit: 8 });
+  const res = await fetchProducts({ isNewArrival: "true", limit: 8 }, { next: { revalidate: 30 } });
   return res; // keep original
 }
 
 /* ------------------------- Category APIs ------------------------- */
 export async function fetchCategories() {
-  return apiFetch("/categories"); // keep original
+  return apiFetch("/categories", { next: { revalidate: 30 } }); // keep original
 }
 
 /* ------------------------- Auth APIs ------------------------- */
@@ -137,7 +138,7 @@ export async function clearCart() {
 
 export async function fetchProductBySlug(slug) {
   const res = await fetch(`${API_BASE_URL}/products/${slug}`, {
-    cache: "no-store",
+    next: { revalidate: 30 },
   });
 
   if (!res.ok) {
@@ -200,7 +201,7 @@ export async function fetchAdminReviews(params = {}) {
 }
 
 export async function fetchPublicSettings() {
-  return apiFetch("/settings/homepage");
+  return apiFetch("/settings/homepage", { next: { revalidate: 30 } });
 }
 
 export async function fetchSettings() {

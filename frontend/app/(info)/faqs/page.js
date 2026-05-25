@@ -1,4 +1,4 @@
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 import { fetchPublicSettings } from "@/lib/api";
 import FaqAccordion from "@/components/faqs/FaqAccordion";
 

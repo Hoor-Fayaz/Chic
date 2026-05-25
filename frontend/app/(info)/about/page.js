@@ -1,4 +1,4 @@
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 import { fetchPage } from "@/lib/cms";
 import PageContent from "@/components/ui/PageContent";
 import { Sparkles, Heart, Star, Users } from "lucide-react";
