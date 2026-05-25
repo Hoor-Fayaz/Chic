@@ -65,6 +65,7 @@ export default async function CategoryPage({ params, searchParams }) {
             total={total} 
             categories={categories} 
             availableFabrics={availableFabrics}
+            defaultCategory={category?._id}
         />
       </div>
     </div>
