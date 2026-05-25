@@ -127,13 +127,13 @@ export default function ProductCard({ product, showRemove = false, onRemove = nu
           </p>
         </div>
         
-        <div className="flex items-center justify-center md:justify-start gap-2.5">
-          <span className="text-[15px] font-bold text-gray-900">
+        <div className="flex flex-wrap items-center justify-center md:justify-start gap-2.5">
+          <span className="min-w-0 text-sm md:text-[15px] font-bold text-gray-900 truncate">
             PKR {product.price?.toLocaleString()}
           </span>
           {product.originalPrice && product.originalPrice > product.price && (
-            <div className="flex items-center gap-2">
-              <span className="text-[12px] text-gray-400 line-through">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="min-w-0 text-[12px] text-gray-400 line-through truncate">
                 PKR {product.originalPrice.toLocaleString()}
               </span>
               <span className="text-[10px] font-bold text-red-500 px-1.5 py-0.5 bg-red-50 rounded-full">
