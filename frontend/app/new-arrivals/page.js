@@ -1,6 +1,8 @@
 import ProductListContainer from "@/components/product/ProductListContainer";
 import { fetchProducts, fetchCategories } from "@/lib/api";
 
+export const dynamic = "force-dynamic";
+
 export const metadata = {
   title: "New Arrivals | Jannah Chic",
   description: "Discover the latest additions to our curated collection.",
@@ -10,19 +12,25 @@ export default async function NewArrivalsPage({ searchParams }) {
   let products = [];
   let total = 0;
   let categories = [];
+  let availableFabrics = [];
+  let availableSizes = [];
+  let availableColors = [];
 
   try {
     const [productsRes, categoriesRes] = await Promise.all([
       fetchProducts({
         ...searchParams,
         isNewArrival: "true",
-        limit: 50,
+        limit: 1000,
       }),
       fetchCategories(),
     ]);
 
     products = productsRes.data?.items || [];
     total = productsRes.data?.total ?? products.length;
+    availableFabrics = productsRes.data?.availableFabrics || [];
+    availableSizes = productsRes.data?.availableSizes || [];
+    availableColors = productsRes.data?.availableColors || [];
     categories = categoriesRes.data?.items || [];
   } catch (err) {
     console.error("❌ Failed to load New Arrivals page data:", err.message);
@@ -50,6 +58,10 @@ export default async function NewArrivalsPage({ searchParams }) {
             products={products} 
             total={total} 
             categories={categories} 
+            availableFabrics={availableFabrics}
+            availableSizes={availableSizes}
+            availableColors={availableColors}
+            defaultLimit={1000}
         />
       </div>
     </div>

@@ -2,6 +2,8 @@ import ProductListContainer from "@/components/product/ProductListContainer";
 import { fetchProducts, fetchCategories } from "@/lib/api";
 import { HiOutlineSearch } from "react-icons/hi";
 
+export const dynamic = "force-dynamic";
+
 export async function generateMetadata({ searchParams }) {
   const query = searchParams.q || "";
   return {
@@ -15,15 +17,21 @@ export default async function SearchPage({ searchParams }) {
   let products = [];
   let total = 0;
   let categories = [];
+  let availableFabrics = [];
+  let availableSizes = [];
+  let availableColors = [];
 
   try {
     const [productsRes, categoriesRes] = await Promise.all([
-      fetchProducts({ ...searchParams, search: query, limit: 50 }),
+      fetchProducts({ ...searchParams, search: query, limit: 1000 }),
       fetchCategories(),
     ]);
 
     products = productsRes.data?.items || [];
     total = productsRes.data?.total || 0;
+    availableFabrics = productsRes.data?.availableFabrics || [];
+    availableSizes = productsRes.data?.availableSizes || [];
+    availableColors = productsRes.data?.availableColors || [];
     categories = categoriesRes.data?.items || [];
   } catch (err) {
     console.error(`❌ Failed to load Search results for "${query}":`, err.message);
@@ -53,6 +61,10 @@ export default async function SearchPage({ searchParams }) {
             products={products} 
             total={total} 
             categories={categories} 
+            availableFabrics={availableFabrics}
+            availableSizes={availableSizes}
+            availableColors={availableColors}
+            defaultLimit={1000}
         />
       </div>
     </div>

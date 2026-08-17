@@ -31,7 +31,7 @@ export default function AdminProductsPage() {
 
   const loadProducts = async () => {
     try {
-      const data = await fetchProducts({ limit: 200, status: 'all' }); 
+      const data = await fetchProducts({ limit: 1000, status: 'all' }); 
       setProducts(data.data?.items || []);
     } catch (error) {
       console.error("Failed to load products", error);

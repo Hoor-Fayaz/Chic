@@ -3,7 +3,7 @@ const Product = require('../models/Product');
 async function listProducts(query) {
   const {
     page = 1,
-    limit = 12,
+    limit = 1000,
     search,
     category,
     isFeatured,
@@ -15,9 +15,22 @@ async function listProducts(query) {
     sizes,
     fabrics,
     colors,
+    status,
   } = query;
 
-  const filter = { status: 'active' };
+  const mongoose = require('mongoose');
+  const Category = require('../models/Category');
+
+  const filter = {};
+  if (status === 'all') {
+    // Show all products regardless of active/archived status
+  } else if (status) {
+    filter.status = status;
+  } else {
+    filter.status = 'active';
+  }
+
+  const andConditions = [];
 
   if (search) {
     const searchTerm = search.toLowerCase().trim();
@@ -27,7 +40,6 @@ async function listProducts(query) {
       filter.isNewArrival = true;
     } else {
       // Find categories that match the search term
-      const Category = require('../models/Category');
       const categories = await Category.find({
         $or: [
           { name: new RegExp(search, 'i') },
@@ -37,9 +49,7 @@ async function listProducts(query) {
 
       const catIds = categories.map(c => c._id);
       
-      // Use pure regex search for partial matching across multiple fields
-      // This is more robust for boutiques and avoids MongoDB $text index conflicts
-      filter.$or = [
+      const searchOr = [
         { name: { $regex: search, $options: 'i' } },
         { description: { $regex: search, $options: 'i' } },
         { fabric: { $regex: search, $options: 'i' } },
@@ -49,13 +59,59 @@ async function listProducts(query) {
       ];
 
       if (catIds.length > 0) {
-        filter.$or.push({ category: { $in: catIds } });
+        searchOr.push({ category: { $in: catIds } });
+        searchOr.push({ subCategory: { $in: catIds } });
       }
+
+      andConditions.push({ $or: searchOr });
     }
   }
 
   if (category) {
-    filter.category = category;
+    let targetCatIds = [];
+
+    if (mongoose.Types.ObjectId.isValid(category)) {
+      const childCategories = await Category.find({ parent: category }).select('_id');
+      targetCatIds = [category, ...childCategories.map(c => c._id)];
+    } else {
+      const cleanCat = String(category).trim();
+      const singularCat = cleanCat.replace(/s$/i, '');
+      const matchedCats = await Category.find({
+        $or: [
+          { slug: new RegExp(`^${cleanCat}$`, 'i') },
+          { name: new RegExp(`^${cleanCat}$`, 'i') },
+          { slug: new RegExp(`^${singularCat}`, 'i') },
+          { name: new RegExp(`^${singularCat}`, 'i') },
+          { slug: new RegExp(cleanCat, 'i') },
+          { name: new RegExp(cleanCat, 'i') }
+        ]
+      }).select('_id');
+
+      const catIds = matchedCats.map(c => c._id);
+      if (catIds.length > 0) {
+        const childCats = await Category.find({ parent: { $in: catIds } }).select('_id');
+        targetCatIds = [...catIds, ...childCats.map(c => c._id)];
+      }
+    }
+
+    if (targetCatIds.length > 0) {
+      andConditions.push({
+        $or: [
+          { category: { $in: targetCatIds } },
+          { subCategory: { $in: targetCatIds } }
+        ]
+      });
+    } else if (!mongoose.Types.ObjectId.isValid(category)) {
+      // Fallback matching against product name/tags/fabric/description
+      andConditions.push({
+        $or: [
+          { name: { $regex: category, $options: 'i' } },
+          { tags: { $regex: category, $options: 'i' } },
+          { fabric: { $regex: category, $options: 'i' } },
+          { description: { $regex: category, $options: 'i' } }
+        ]
+      });
+    }
   }
 
   if (minPrice || maxPrice) {
@@ -83,14 +139,21 @@ async function listProducts(query) {
   if (isNewArrival === 'true') filter.isNewArrival = true;
   if (isOnSale === 'true') filter.isOnSale = true;
 
+  if (andConditions.length > 0) {
+    filter.$and = andConditions;
+  }
+
   let sortOption = { createdAt: -1 };
   if (sort === 'price_asc') sortOption = { price: 1 };
   if (sort === 'price_desc') sortOption = { price: -1 };
   if (sort === 'rating') sortOption = { ratingAverage: -1 };
 
   const pageNum = Number(page) || 1;
-  const limitNum = Number(limit) || 12;
+  const parsedLimit = Number(limit);
+  const limitNum = parsedLimit === 0 || limit === 'all' || limit === '0' ? 10000 : (parsedLimit || 1000);
   const skip = (pageNum - 1) * limitNum;
+
+  const distinctStatusFilter = filter.status ? { status: filter.status } : {};
 
   const [items, total, uniqueFabrics, uniqueSizes, uniqueColors] = await Promise.all([
     Product.find(filter)
@@ -99,9 +162,9 @@ async function listProducts(query) {
       .skip(skip)
       .limit(limitNum),
     Product.countDocuments(filter),
-    Product.distinct('fabric', { status: 'active', fabric: { $ne: null, $ne: '' } }),
-    Product.distinct('sizes', { status: 'active' }),
-    Product.distinct('colors', { status: 'active' })
+    Product.distinct('fabric', { ...distinctStatusFilter, fabric: { $ne: null, $ne: '' } }),
+    Product.distinct('sizes', distinctStatusFilter),
+    Product.distinct('colors', distinctStatusFilter)
   ]);
 
   return {

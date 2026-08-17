@@ -12,6 +12,8 @@ export async function generateMetadata({ params }) {
   };
 }
 
+export const dynamic = "force-dynamic";
+
 export default async function CategoryPage({ params, searchParams }) {
   const slug = params.slug;
 
@@ -20,21 +22,41 @@ export default async function CategoryPage({ params, searchParams }) {
   let products = [];
   let total = 0;
   let availableFabrics = [];
+  let availableSizes = [];
+  let availableColors = [];
 
   try {
     // Fetch categories first to resolve the slug → MongoDB _id
     const categoriesRes = await fetchCategories();
     categories = categoriesRes.data?.categories || categoriesRes.data?.items || [];
-    category = categories.find((c) => c.slug === slug) || null;
+    
+    // Flexible category matching (slug, name, singular/plural, case-insensitive)
+    const normalize = (str) => (str || "").toLowerCase().trim().replace(/[^a-z0-9]/g, "");
+    const cleanSlug = normalize(slug);
 
-    // Now fetch products filtered by the resolved category ID
-    if (category?._id) {
-      const queryParams = { ...searchParams, category: category._id };
-      const productsRes = await fetchProducts(queryParams);
-      products = productsRes.data?.items || [];
-      total = productsRes.data?.total ?? products.length;
-      availableFabrics = productsRes.data?.availableFabrics || [];
-    }
+    category = categories.find((c) => {
+      const cSlug = normalize(c.slug);
+      const cName = normalize(c.name);
+      return (
+        cSlug === cleanSlug ||
+        cName === cleanSlug ||
+        cSlug.replace(/s$/, "") === cleanSlug.replace(/s$/, "") ||
+        cName.replace(/s$/, "") === cleanSlug.replace(/s$/, "") ||
+        cSlug.includes(cleanSlug) ||
+        cleanSlug.includes(cSlug)
+      );
+    }) || null;
+
+    // Fetch all products (limit: 1000) filtered by category ID or slug
+    const targetCategory = category?._id || slug;
+    const queryParams = { ...searchParams, category: targetCategory, limit: 1000 };
+    const productsRes = await fetchProducts(queryParams);
+
+    products = productsRes.data?.items || [];
+    total = productsRes.data?.total ?? products.length;
+    availableFabrics = productsRes.data?.availableFabrics || [];
+    availableSizes = productsRes.data?.availableSizes || [];
+    availableColors = productsRes.data?.availableColors || [];
   } catch (err) {
     console.error(`❌ Failed to load category data [${slug}]:`, err.message);
   }
@@ -65,7 +87,10 @@ export default async function CategoryPage({ params, searchParams }) {
             total={total} 
             categories={categories} 
             availableFabrics={availableFabrics}
-            defaultCategory={category?._id}
+            availableSizes={availableSizes}
+            availableColors={availableColors}
+            defaultCategory={category?._id || slug}
+            defaultLimit={1000}
         />
       </div>
     </div>
