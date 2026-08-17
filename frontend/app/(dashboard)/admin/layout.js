@@ -5,7 +5,8 @@ import { usePathname } from 'next/navigation';
 import { useAuthStore } from '@/store/authStore';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, ShieldAlert } from 'lucide-react';
+import { apiFetch } from '@/lib/api';
 
 const adminNavItems = [
   { href: '/admin/dashboard', label: 'Dashboard' },
@@ -18,29 +19,64 @@ const adminNavItems = [
 ];
 
 export default function AdminLayout({ children }) {
-  const { user, logout } = useAuthStore();
+  const { user, token, logout } = useAuthStore();
   const isHydrated = useAuthStore((s) => s.isHydrated);
   const router = useRouter();
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(true);
 
   useEffect(() => {
-    if (isHydrated && (!user || user.role !== 'admin')) {
-      router.push('/auth/login');
+    let cancelled = false;
+
+    async function verifyAdmin() {
+      if (!isHydrated) return;
+
+      if (!token || !user || user.role !== 'admin') {
+        setIsVerifying(false);
+        router.replace(`/admin/login?callbackUrl=${encodeURIComponent(pathname)}`);
+        return;
+      }
+
+      try {
+        const res = await apiFetch('/auth/me');
+        if (cancelled) return;
+        if (!res.success || res.data?.user?.role !== 'admin') {
+          logout();
+          router.replace(`/admin/login?callbackUrl=${encodeURIComponent(pathname)}`);
+        } else {
+          setIsVerifying(false);
+        }
+      } catch (err) {
+        if (cancelled) return;
+        logout();
+        router.replace(`/admin/login?callbackUrl=${encodeURIComponent(pathname)}`);
+      }
     }
-  }, [user, isHydrated, router]);
+
+    verifyAdmin();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [isHydrated, user, token, pathname, router, logout]);
 
   // Close sidebar on navigation on mobile
   useEffect(() => {
     setSidebarOpen(false);
   }, [pathname]);
 
-  if (!isHydrated || !user || user.role !== 'admin') {
+  if (!isHydrated || isVerifying || !user || user.role !== 'admin') {
     return (
-      <div className="min-h-screen flex items-center justify-center font-display bg-gray-50">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-8 h-8 border-2 border-black border-t-transparent rounded-full animate-spin" />
-          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400">Authenticating Admin...</p>
+      <div className="min-h-screen flex items-center justify-center font-display bg-[#f8f5f2]">
+        <div className="flex flex-col items-center gap-4 bg-white p-12 rounded-[2.5rem] shadow-xl border border-gray-100 max-w-sm text-center">
+          <div className="w-12 h-12 rounded-2xl bg-black flex items-center justify-center text-white shadow-lg shadow-black/10">
+            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+          </div>
+          <p className="text-[11px] font-bold uppercase tracking-[0.3em] text-gray-900 mt-2">Authenticating Portal</p>
+          <p className="text-[9px] text-gray-400 uppercase tracking-widest leading-relaxed">
+            Verifying cryptographic credentials with Atelier secure server...
+          </p>
         </div>
       </div>
     );

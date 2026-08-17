@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAuthStore } from "@/store/authStore";
 import { loginUser } from "@/lib/api";
 import { Loader2, Lock, Mail, ShieldCheck } from "lucide-react";
@@ -12,6 +12,8 @@ export default function AdminLoginForm() {
   const [loading, setLoading] = useState(false);
 
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl") || "/admin/dashboard";
   const { setAuth } = useAuthStore();
 
   const handleChange = (e) =>
@@ -25,16 +27,16 @@ export default function AdminLoginForm() {
     try {
       const res = await loginUser(form);
       
-      if (res.data.user.role !== "admin") {
-        setError("Access Denied: Admin credentials required.");
+      if (!res.data?.user || res.data.user.role !== "admin") {
+        setError("Access Denied: You must possess verified administrator credentials.");
         setLoading(false);
         return;
       }
 
       setAuth(res.data.user, res.data.token);
-      router.push("/admin/dashboard");
+      router.replace(callbackUrl);
     } catch (err) {
-      setError(err.message || "Authentication failed. Please check your credentials.");
+      setError(err.message || "Authentication failed. Please check your admin credentials.");
     } finally {
       setLoading(false);
     }

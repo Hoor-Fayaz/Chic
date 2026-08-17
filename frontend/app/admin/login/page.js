@@ -1,5 +1,6 @@
 import AdminLoginForm from "@/components/forms/AdminLoginForm";
 import { ShieldCheck } from "lucide-react";
+import { Suspense } from "react";
 
 export const metadata = {
   title: "Atelier Access | Jannah Chic Admin",
@@ -28,7 +29,13 @@ export default function AdminLoginPage() {
         </div>
 
         {/* Specialized Admin Form */}
-        <AdminLoginForm />
+        <Suspense fallback={
+          <div className="w-full max-w-[400px] bg-white p-10 rounded-[2.5rem] shadow-2xl flex items-center justify-center py-20">
+            <div className="w-6 h-6 border-2 border-black border-t-transparent rounded-full animate-spin" />
+          </div>
+        }>
+          <AdminLoginForm />
+        </Suspense>
 
         {/* Footer Link (Return to Site) */}
         <div className="animate-in fade-in duration-1000 delay-500">
