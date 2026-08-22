@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useCartStore } from "@/store/cartStore";
 import { useToastStore } from "@/store/toastStore";
+import { useCurrencyStore } from "@/store/currencyStore";
 import { trackInquiry, fetchPublicSettings } from "@/lib/api";
 import { Minus, Plus, ChevronDown, ChevronUp, Ruler, ShoppingBag } from "lucide-react";
 
@@ -15,6 +16,7 @@ export default function AddToCartSection({ product }) {
   const [showSizeChart, setShowSizeChart] = useState(false);
   const [contactPhone, setContactPhone] = useState('923098730221');
   const { showToast } = useToastStore();
+  const { currency, getNumericPrice, formatPrice } = useCurrencyStore();
 
   useEffect(() => {
     fetchPublicSettings()
@@ -74,6 +76,10 @@ export default function AddToCartSection({ product }) {
     const phoneNumber = contactPhone;
     const currentUrl = typeof window !== 'undefined' ? `${window.location.origin}/product/${product.slug}` : `https://jannah.com/product/${product.slug}`;
     
+    const unitPrice = getNumericPrice(product, false);
+    const totalPrice = unitPrice * quantity;
+    const priceText = currency === 'USD' ? `$${totalPrice.toLocaleString()}` : `PKR ${totalPrice.toLocaleString()}`;
+
     let message = `🌟 *JANNAH - NEW ORDER INQUIRY*\n\n`;
     message += `Hello team, I would like to place an order for the following item:\n\n`;
     message += `📋 *PRODUCT DETAILS*\n`;
@@ -82,7 +88,7 @@ export default function AddToCartSection({ product }) {
     message += `*Quantity:* ${quantity}\n`;
     if (selectedSize) message += `*Size:* ${selectedSize}\n`;
     if (selectedColor) message += `*Color:* ${selectedColor}\n`;
-    message += `*Price:* PKR ${(product.price * quantity).toLocaleString()}\n`;
+    message += `*Price:* ${priceText} (${currency})\n`;
     message += `*Article Link:*\n${currentUrl}\n\n`;
     message += `------------------------------\n`;
     message += `Please confirm the payment and delivery details! Thank you. ✨`;

@@ -13,6 +13,9 @@ export default function EditProductPage() {
         price: '',
         originalPrice: '',
         discountPercent: '',
+        priceUSD: '',
+        originalPriceUSD: '',
+        discountPercentUSD: '',
         isOnSale: false,
         isNewArrival: false,
         isFeatured: false,
@@ -60,6 +63,9 @@ export default function EditProductPage() {
                     price: product.price || '',
                     originalPrice: product.originalPrice || '',
                     discountPercent: product.discountPercent || '',
+                    priceUSD: product.priceUSD || '',
+                    originalPriceUSD: product.originalPriceUSD || '',
+                    discountPercentUSD: product.discountPercentUSD || '',
                     isOnSale: product.isOnSale || false,
                     isNewArrival: product.isNewArrival || false,
                     isFeatured: product.isFeatured || false,
@@ -91,7 +97,7 @@ export default function EditProductPage() {
         const newVal = type === 'checkbox' ? checked : value;
         const updated = { ...form, [name]: newVal };
 
-        // Auto-compute discountPercent when both prices are filled
+        // Auto-compute discountPercent when PKR prices are filled
         if (name === 'originalPrice' || name === 'price') {
             const orig = parseFloat(name === 'originalPrice' ? value : form.originalPrice);
             const sale = parseFloat(name === 'price' ? value : form.price);
@@ -101,6 +107,18 @@ export default function EditProductPage() {
                 updated.discountPercent = '';
             }
         }
+
+        // Auto-compute discountPercentUSD when USD prices are filled
+        if (name === 'originalPriceUSD' || name === 'priceUSD') {
+            const origUSD = parseFloat(name === 'originalPriceUSD' ? value : form.originalPriceUSD);
+            const saleUSD = parseFloat(name === 'priceUSD' ? value : form.priceUSD);
+            if (origUSD > 0 && saleUSD > 0 && origUSD > saleUSD) {
+                updated.discountPercentUSD = Math.round(((origUSD - saleUSD) / origUSD) * 100);
+            } else {
+                updated.discountPercentUSD = '';
+            }
+        }
+
         setForm(updated);
     };
 
@@ -217,6 +235,9 @@ export default function EditProductPage() {
                 price: Number(form.price),
                 originalPrice: form.originalPrice ? Number(form.originalPrice) : undefined,
                 discountPercent: form.discountPercent ? Number(form.discountPercent) : undefined,
+                priceUSD: form.priceUSD ? Number(form.priceUSD) : undefined,
+                originalPriceUSD: form.originalPriceUSD ? Number(form.originalPriceUSD) : undefined,
+                discountPercentUSD: form.discountPercentUSD ? Number(form.discountPercentUSD) : undefined,
                 stock: Number(form.stock),
                 images: form.images.filter((img) => img.url),
                 tags: form.unstitchedType ? [form.unstitchedType] : [],
@@ -277,54 +298,90 @@ export default function EditProductPage() {
                         />
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Sale Price (Rs.)</label>
-                            <input
-                                name="price"
-                                type="number"
-                                value={form.price}
-                                onChange={handleChange}
-                                className="w-full border border-gray-200 px-4 py-2.5 rounded-xl focus:ring-2 focus:ring-black outline-none transition"
-                                required
-                            />
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Stock</label>
-                            <input
-                                name="stock"
-                                type="number"
-                                value={form.stock}
-                                onChange={handleChange}
-                                className="w-full border border-gray-200 px-4 py-2.5 rounded-xl focus:ring-2 focus:ring-black outline-none transition"
-                                required
-                            />
-                        </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Stock Quantity</label>
+                        <input
+                            name="stock"
+                            type="number"
+                            value={form.stock}
+                            onChange={handleChange}
+                            className="w-full border border-gray-200 px-4 py-2.5 rounded-xl focus:ring-2 focus:ring-black outline-none transition"
+                            required
+                        />
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Original Price (Rs.)</label>
-                            <input
-                                name="originalPrice"
-                                type="number"
-                                value={form.originalPrice}
-                                onChange={handleChange}
-                                className="w-full border border-gray-200 px-4 py-2.5 rounded-xl focus:ring-2 focus:ring-black outline-none transition"
-                                placeholder="e.g. 5000"
-                            />
+                    {/* PKR Pricing Box */}
+                    <div className="p-4 bg-emerald-50/40 border border-emerald-100 rounded-2xl space-y-4">
+                        <div className="flex items-center gap-2">
+                            <span className="text-base">🇵🇰</span>
+                            <span className="text-xs font-bold uppercase tracking-wider text-emerald-900">Pakistani Pricing (PKR / Rs.)</span>
                         </div>
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2 text-gray-400">Discount (%)</label>
-                            <input
-                                name="discountPercent"
-                                type="number"
-                                value={form.discountPercent}
-                                className="w-full border border-gray-100 bg-gray-50 px-4 py-2.5 rounded-xl outline-none transition text-gray-400"
-                                readOnly
-                                placeholder="Auto-computed"
-                            />
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <label className="block text-xs font-medium text-gray-700 mb-1">Sale Price (PKR)*</label>
+                                <input
+                                    name="price"
+                                    type="number"
+                                    value={form.price}
+                                    onChange={handleChange}
+                                    className="w-full bg-white border border-gray-200 px-3 py-2 rounded-xl focus:ring-2 focus:ring-black outline-none transition text-sm font-semibold"
+                                    placeholder="e.g. 5000"
+                                    required
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-xs font-medium text-gray-700 mb-1">Original / Strikethrough</label>
+                                <input
+                                    name="originalPrice"
+                                    type="number"
+                                    value={form.originalPrice}
+                                    onChange={handleChange}
+                                    className="w-full bg-white border border-gray-200 px-3 py-2 rounded-xl focus:ring-2 focus:ring-black outline-none transition text-sm"
+                                    placeholder="e.g. 7000"
+                                />
+                            </div>
                         </div>
+                        {form.discountPercent && (
+                            <p className="text-[11px] font-bold text-emerald-700">PKR Discount: {form.discountPercent}% OFF</p>
+                        )}
+                    </div>
+
+                    {/* USD Pricing Box */}
+                    <div className="p-4 bg-blue-50/40 border border-blue-100 rounded-2xl space-y-4">
+                        <div className="flex items-center gap-2">
+                            <span className="text-base">🌐</span>
+                            <span className="text-xs font-bold uppercase tracking-wider text-blue-900">International Pricing ($ USD)</span>
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <label className="block text-xs font-medium text-gray-700 mb-1">Sale Price ($ USD)</label>
+                                <input
+                                    name="priceUSD"
+                                    type="number"
+                                    step="0.01"
+                                    value={form.priceUSD}
+                                    onChange={handleChange}
+                                    className="w-full bg-white border border-gray-200 px-3 py-2 rounded-xl focus:ring-2 focus:ring-black outline-none transition text-sm font-semibold"
+                                    placeholder="e.g. 25"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-xs font-medium text-gray-700 mb-1">Original / Strikethrough</label>
+                                <input
+                                    name="originalPriceUSD"
+                                    type="number"
+                                    step="0.01"
+                                    value={form.originalPriceUSD}
+                                    onChange={handleChange}
+                                    className="w-full bg-white border border-gray-200 px-3 py-2 rounded-xl focus:ring-2 focus:ring-black outline-none transition text-sm"
+                                    placeholder="e.g. 35"
+                                />
+                            </div>
+                        </div>
+                        {form.discountPercentUSD && (
+                            <p className="text-[11px] font-bold text-blue-700">USD Discount: {form.discountPercentUSD}% OFF</p>
+                        )}
+                        <p className="text-[10px] text-gray-400 italic">Displayed to all visitors outside Pakistan automatically.</p>
                     </div>
 
                     {/* Flags */}

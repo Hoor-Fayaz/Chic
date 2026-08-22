@@ -10,6 +10,7 @@ async function listProducts(query) {
     isNewArrival,
     isOnSale,
     sort = 'newest',
+    currency = 'PKR',
     minPrice,
     maxPrice,
     sizes,
@@ -114,10 +115,12 @@ async function listProducts(query) {
     }
   }
 
+  const priceField = currency?.toUpperCase() === 'USD' ? 'priceUSD' : 'price';
+
   if (minPrice || maxPrice) {
-    filter.price = {};
-    if (minPrice) filter.price.$gte = Number(minPrice);
-    if (maxPrice) filter.price.$lte = Number(maxPrice);
+    filter[priceField] = {};
+    if (minPrice) filter[priceField].$gte = Number(minPrice);
+    if (maxPrice) filter[priceField].$lte = Number(maxPrice);
   }
 
   if (sizes) {
@@ -144,8 +147,8 @@ async function listProducts(query) {
   }
 
   let sortOption = { createdAt: -1 };
-  if (sort === 'price_asc') sortOption = { price: 1 };
-  if (sort === 'price_desc') sortOption = { price: -1 };
+  if (sort === 'price_asc') sortOption = { [priceField]: 1 };
+  if (sort === 'price_desc') sortOption = { [priceField]: -1 };
   if (sort === 'rating') sortOption = { ratingAverage: -1 };
 
   const pageNum = Number(page) || 1;

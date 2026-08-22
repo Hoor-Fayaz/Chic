@@ -5,6 +5,7 @@ import Link from "next/link";
 import { HiOutlineX } from "react-icons/hi";
 import { useCartStore } from "@/store/cartStore";
 import { useToastStore } from "@/store/toastStore";
+import { useCurrencyStore } from "@/store/currencyStore";
 import { fetchPublicSettings } from "@/lib/api";
 import { Minus, Plus, ShoppingBag } from "lucide-react";
 
@@ -14,6 +15,7 @@ export default function CartPage() {
   const cartItems = useCartStore((state) => state.cart || []);
   const removeItem = useCartStore((state) => state.removeItem);
   const updateQuantity = useCartStore((state) => state.updateQuantity);
+  const { currency, formatPrice } = useCurrencyStore();
   const [contactPhone, setContactPhone] = useState('923098730221');
 
   useEffect(() => {
@@ -45,10 +47,20 @@ export default function CartPage() {
   }
 
   const items = cartItems;
+
+  const getItemPrice = (item) => {
+    if (currency === 'USD') {
+      return item.priceUSD || item.product?.priceUSD || (item.price ? Math.round(item.price / 280) : 0);
+    }
+    return item.price || item.product?.price || 0;
+  };
+
   const subtotal = items.reduce(
-    (sum, item) => sum + (item.price || item.product?.price || 0) * item.quantity,
+    (sum, item) => sum + getItemPrice(item) * item.quantity,
     0
   );
+
+  const formattedSubtotal = currency === 'USD' ? `$${subtotal.toLocaleString()}` : `PKR ${subtotal.toLocaleString()}`;
 
   const handleWhatsAppCheckout = () => {
     const phoneNumber = contactPhone.replace(/\D/g, '');
@@ -62,17 +74,19 @@ export default function CartPage() {
     items.forEach((item, idx) => {
       const product = item.product;
       const productUrl = `${currentOrigin}/product/${product?.slug}`;
+      const itemPrice = getItemPrice(item);
+      const itemTotalFormatted = currency === 'USD' ? `$${(itemPrice * item.quantity).toLocaleString()}` : `PKR ${(itemPrice * item.quantity).toLocaleString()}`;
       
       message += `*Item ${idx + 1}:* ${product?.name}\n`;
       message += `*Quantity:* ${item.quantity}\n`;
       if (item.size) message += `*Size:* ${item.size}\n`;
       if (item.color) message += `*Color:* ${item.color}\n`;
-      message += `*Price:* PKR ${(item.price * item.quantity).toLocaleString()}\n`;
+      message += `*Price:* ${itemTotalFormatted}\n`;
       message += `*Article Link:*\n${productUrl}\n\n`;
     });
     
     message += `------------------------------\n`;
-    message += `💰 *Subtotal: PKR ${subtotal.toLocaleString()}*\n\n`;
+    message += `💰 *Subtotal: ${formattedSubtotal} (${currency})*\n\n`;
     message += `Please confirm the payment and delivery details! Thank you. ✨`;
     
     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
@@ -107,6 +121,10 @@ export default function CartPage() {
                   product?.images?.find((img) => img.isPrimary) ||
                   product?.images?.[0] ||
                   null;
+                const unitPrice = getItemPrice(item);
+                const totalItemPriceFormatted = currency === 'USD' 
+                  ? `$${(unitPrice * item.quantity).toLocaleString()}` 
+                  : `PKR ${(unitPrice * item.quantity).toLocaleString()}`;
 
                 return (
                   <div
@@ -169,7 +187,7 @@ export default function CartPage() {
                           </button>
                         </div>
                         <span className="font-bold text-gray-900 text-[13px]">
-                          PKR {(item.price * item.quantity).toLocaleString()}
+                          {totalItemPriceFormatted}
                         </span>
                       </div>
                     </div>
@@ -185,7 +203,7 @@ export default function CartPage() {
               <div className="space-y-2 text-sm text-gray-700">
                 <div className="flex justify-between">
                   <span>Subtotal</span>
-                  <span>PKR {subtotal.toLocaleString()}</span>
+                  <span>{formattedSubtotal}</span>
                 </div>
                 <div className="flex justify-between text-gray-500">
                   <span>Shipping</span>
@@ -194,7 +212,7 @@ export default function CartPage() {
               </div>
               <div className="flex justify-between border-t border-gray-100 pt-4 text-sm font-bold text-gray-900">
                 <span className="uppercase tracking-widest text-[10px]">Total</span>
-                <span>PKR {subtotal.toLocaleString()}</span>
+                <span>{formattedSubtotal}</span>
               </div>
               <button
                 onClick={handleWhatsAppCheckout}

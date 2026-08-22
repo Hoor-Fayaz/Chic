@@ -77,6 +77,20 @@ const productSchema = new mongoose.Schema(
       min: 0,
       max: 100,
     },
+    priceUSD: {
+      type: Number,
+      min: 0,
+      default: 0,
+    },
+    originalPriceUSD: {
+      type: Number,
+      min: 0,
+    },
+    discountPercentUSD: {
+      type: Number,
+      min: 0,
+      max: 100,
+    },
     stock: {
       type: Number,
       default: 0,

@@ -186,9 +186,25 @@ export default function AdminProductsPage() {
                                     </div>
                                 </td>
                                 <td className="py-8 px-6 text-right">
-                                    <div className="flex flex-col items-end">
-                                        <span className="text-xs font-bold text-gray-900 tracking-widest uppercase">PKR {p.price?.toLocaleString()}</span>
-                                        {p.originalPrice && p.originalPrice > p.price && <span className="text-[9px] text-gray-400 line-through mt-1 italic tracking-widest">PKR {p.originalPrice.toLocaleString()}</span>}
+                                    <div className="flex flex-col items-end gap-1">
+                                        <div className="flex items-center gap-1.5">
+                                            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-800 border border-emerald-100">PKR</span>
+                                            <span className="text-xs font-bold text-gray-900 tracking-wider">Rs. {p.price?.toLocaleString()}</span>
+                                        </div>
+                                        {p.originalPrice && p.originalPrice > p.price && (
+                                            <span className="text-[9px] text-gray-400 line-through italic tracking-wider mr-1">Rs. {p.originalPrice.toLocaleString()}</span>
+                                        )}
+                                        {p.priceUSD ? (
+                                            <div className="flex items-center gap-1.5 mt-0.5">
+                                                <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-blue-50 text-blue-800 border border-blue-100">USD</span>
+                                                <span className="text-xs font-bold text-blue-900 tracking-wider">${p.priceUSD.toLocaleString()}</span>
+                                                {p.originalPriceUSD && p.originalPriceUSD > p.priceUSD && (
+                                                    <span className="text-[9px] text-gray-400 line-through italic tracking-wider">${p.originalPriceUSD.toLocaleString()}</span>
+                                                )}
+                                            </div>
+                                        ) : (
+                                            <span className="text-[9px] text-gray-300 italic">USD not set</span>
+                                        )}
                                     </div>
                                 </td>
                                 <td className="py-8 px-10 text-right">

@@ -23,7 +23,18 @@ export const useCartStore = create(
 
           const cartItemId = `${product._id}-${size}-${color}-${Date.now()}`;
           return {
-            cart: [...state.cart, { cartItemId, product, quantity, size, color, price: product.price }],
+            cart: [
+              ...state.cart,
+              {
+                cartItemId,
+                product,
+                quantity,
+                size,
+                color,
+                price: product.price,
+                priceUSD: product.priceUSD || (product.price ? Math.round(product.price / 280) : 0),
+              },
+            ],
           };
         }),
 

@@ -8,10 +8,12 @@ import AddToCartSection from "@/components/product/AddToCartSection";
 import ReviewList from "@/components/product/ReviewList";
 import ReviewForm from "@/components/product/ReviewForm";
 import ReviewStars from "@/components/product/ReviewStars";
+import { useCurrencyStore } from "@/store/currencyStore";
 
 export default function ProductDetailContent({ product }) {
   const [refreshKey, setRefreshKey] = useState(0);
   const router = useRouter();
+  const { formatPrice, getNumericPrice } = useCurrencyStore();
 
   // Optimistic local state for immediately un-blocking visual updates
   const [localStats, setLocalStats] = useState({
@@ -22,6 +24,10 @@ export default function ProductDetailContent({ product }) {
   if (!product) return notFound();
 
   const pieceType = product.tags?.find(t => t.toLowerCase() === '2 piece' || t.toLowerCase() === '3 piece');
+
+  const activePrice = getNumericPrice(product, false);
+  const activeOriginalPrice = getNumericPrice(product, true);
+  const hasDiscount = activeOriginalPrice > activePrice && activePrice > 0;
 
   const handleReviewAdded = (newRating) => {
       setRefreshKey(prev => prev + 1);
@@ -83,18 +89,18 @@ export default function ProductDetailContent({ product }) {
 
               {/* Price */}
               <div className="flex items-center gap-3 pt-2">
-                {product.originalPrice && product.originalPrice > product.price ? (
+                {hasDiscount ? (
                     <>
                         <span className="text-lg font-bold text-gray-900">
-                            PKR {product.price?.toLocaleString()}
+                            {formatPrice(product, false)}
                         </span>
                         <span className="text-sm text-gray-400 line-through">
-                            PKR {product.originalPrice.toLocaleString()}
+                            {formatPrice(product, true)}
                         </span>
                     </>
                 ) : (
                     <span className="text-lg font-bold text-gray-900">
-                        PKR {product.price?.toLocaleString()}
+                        {formatPrice(product, false)}
                     </span>
                 )}
               </div>

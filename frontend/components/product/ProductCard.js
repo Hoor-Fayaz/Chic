@@ -10,6 +10,7 @@ import { HiOutlineX } from "react-icons/hi";
 import { useWishlistStore } from "@/store/wishlistStore";
 import { useAuthStore } from "@/store/authStore";
 import { useToastStore } from "@/store/toastStore";
+import { useCurrencyStore } from "@/store/currencyStore";
 import ReviewStars from "./ReviewStars";
 
 export default function ProductCard({ product, showRemove = false, onRemove = null }) {
@@ -17,6 +18,7 @@ export default function ProductCard({ product, showRemove = false, onRemove = nu
   const user = useAuthStore((s) => s.user);
   const { wishlist, toggle } = useWishlistStore();
   const { showToast } = useToastStore();
+  const { currency, formatPrice, getNumericPrice } = useCurrencyStore();
   const liked = wishlist.some((p) => p._id === product._id);
 
   const primaryImage =
@@ -25,6 +27,13 @@ export default function ProductCard({ product, showRemove = false, onRemove = nu
     product.images?.find((img) => !img.isPrimary) || product.images?.[1] || null;
 
   const pieceType = product.tags?.find(t => t.toLowerCase() === '2 piece' || t.toLowerCase() === '3 piece');
+
+  // Compute active price values based on currency
+  const activePrice = getNumericPrice(product, false);
+  const activeOriginalPrice = getNumericPrice(product, true);
+  const hasDiscount = activeOriginalPrice > activePrice && activePrice > 0;
+  const discountPct = (currency === 'USD' ? product.discountPercentUSD : product.discountPercent) ||
+    (hasDiscount ? Math.round(((activeOriginalPrice - activePrice) / activeOriginalPrice) * 100) : 0);
 
   return (
     <div className="group flex flex-col bg-white overflow-hidden transition-all duration-500">
@@ -70,9 +79,9 @@ export default function ProductCard({ product, showRemove = false, onRemove = nu
 
         {/* Badges */}
         <div className="absolute left-2 top-2 md:left-4 md:top-4 z-20 flex flex-col gap-1 md:gap-2">
-            {product.isOnSale && product.price < product.originalPrice && (
+            {product.isOnSale && hasDiscount && (
                 <span className="bg-rose-600 text-white text-[8px] md:text-[10px] font-bold px-2 py-0.5 md:px-3 md:py-1 rounded-full uppercase tracking-widest shadow-sm">
-                    Sale {product.discountPercent || Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}%
+                    Sale {discountPct}%
                 </span>
             )}
             {product.isNewArrival && (
@@ -129,15 +138,15 @@ export default function ProductCard({ product, showRemove = false, onRemove = nu
         
         <div className="flex flex-wrap items-center justify-center md:justify-start gap-2.5">
           <span className="min-w-0 text-sm md:text-[15px] font-bold text-gray-900 truncate">
-            PKR {product.price?.toLocaleString()}
+            {formatPrice(product, false)}
           </span>
-          {product.originalPrice && product.originalPrice > product.price && (
+          {hasDiscount && (
             <div className="flex flex-wrap items-center gap-2">
               <span className="min-w-0 text-[12px] text-gray-400 line-through truncate">
-                PKR {product.originalPrice.toLocaleString()}
+                {formatPrice(product, true)}
               </span>
               <span className="text-[10px] font-bold text-red-500 px-1.5 py-0.5 bg-red-50 rounded-full">
-                -{product.discountPercent}%
+                -{discountPct}%
               </span>
             </div>
           )}
