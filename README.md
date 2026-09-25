@@ -1,4 +1,4 @@
-# Chic
+# JannahChic
 
 <div align="center">
 
@@ -18,7 +18,7 @@
 
 </div>
 
-Chic is a production-ready eCommerce platform built for premium fashion brands. It combines a modern storefront, a robust REST API, and an admin dashboard to deliver a complete online shopping experience from browsing to checkout.
+JannahChic is a production-ready eCommerce platform built for premium fashion brands. It combines a modern storefront, a robust REST API, and an admin dashboard to deliver a complete online shopping experience from browsing to checkout.
 
 The project is built with a scalable architecture and optimized for performance, search visibility, and user-friendly storefront operations.
 
@@ -83,7 +83,7 @@ This architecture separates the customer-facing UI from the API services, allowi
 ## Project Structure
 
 ```text
-Chic/
+JannahChic/
 ├── backend/                     # Express API and database configuration
 │   ├── src/
 │   │   ├── app.js               # Express app setup and routes
@@ -267,7 +267,7 @@ This project currently follows the repository’s license configuration. Please 
 Built as a premium fashion commerce platform focused on scalability, usability, and conversion-friendly storefront design.
 
 <p align="center">
-  <strong>Chic</strong> — modern shopping, crafted beautifully.
+  <strong>JannahChic</strong> — modern shopping, crafted beautifully.
 </p>
 
 ---
